@@ -1,0 +1,15 @@
+fastapi [all]
+sqlalchemy
+psycopg2
+uvicorn
+alembic
+secure-smtplib
+python-dotenv
+loguru
+fastapi_permissions
+PyJWT
+bcrypt
+passlib
+python-jose
+ppillow
+python-multipart
