@@ -50,7 +50,9 @@ async def create_town(new_town_c: towns_schemas.TownCreate, db: Session = Depend
 @router.get("/get_all_actif/", response_model=List[towns_schemas.TownListing])
 async def read_towns_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    towns_queries = db.query(models.Town).filter(models.Town.active == "True", ).offset(skip).limit(limit).all()
+    # towns_queries = db.query(models.Town).filter(models.Town.active == "True" ).offset(skip).limit(limit).all()
+    # Récupérez les villes du pays
+    towns_queries = db.query(models.Town).filter(models.Town.active == "True").join(models.Country).filter(models.Country.id == models.Town.country_id).group_by(models.Town.id).limit(limit).offset(skip).all()
     
     # pas de town
     if not towns_queries:

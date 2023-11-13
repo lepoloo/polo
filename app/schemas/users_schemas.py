@@ -2,6 +2,8 @@ from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator
 from datetime import datetime, date
 from enum import Enum
 from typing import Optional
+from app.schemas.profils_schemas import ProfilListing
+from app.schemas.entertainment_sites_schemas import EntertainmentSiteListing
 from app.models.models import GenderType
 
 class User(BaseModel):
@@ -24,6 +26,8 @@ class UserCreate(User):
 class UserListing(User):
     id: str
     refnumber: str
+    # entertainment_site: ProfilListing
+    # profil:EntertainmentSiteListing
     
     class Config:
         from_attributes = True 
@@ -35,6 +39,8 @@ class UserDetail(UserListing):
     is_owner: bool
     created_at: datetime
     created_by: str
+    # entertainment_site: ProfilListing
+    # profil:EntertainmentSiteListing
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
     

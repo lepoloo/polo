@@ -34,8 +34,8 @@ class User(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    entertainment_site = relationship("EntertainmentSite", back_populates="owner")
-    profil = relationship("Profil", back_populates="owner")
+    entertainment_sites = relationship("EntertainmentSite", back_populates="owner")
+    profils = relationship("Profil", back_populates="owner")
     
     
 
@@ -54,8 +54,8 @@ class Role(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    profil_role = relationship("ProfilRole", back_populates="role")
-    privilege_role = relationship("PrivilegeRole", back_populates="role")
+    profil_roles = relationship("ProfilRole", back_populates="role")
+    privilege_roles = relationship("PrivilegeRole", back_populates="role")
  
 # Privilege : doing   
 class Privilege(Base):
@@ -72,8 +72,8 @@ class Privilege(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    privilege_role = relationship("PrivilegeRole", back_populates="privilege")
-    profil_privilege = relationship("ProfilPrivilege", back_populates="privilege")
+    privilege_roles = relationship("PrivilegeRole", back_populates="privilege")
+    profil_privileges = relationship("ProfilPrivilege", back_populates="privilege")
 
 # Privilege_role : doing   
 class PrivilegeRole(Base):
@@ -84,10 +84,10 @@ class PrivilegeRole(Base):
     
     role_id = Column(String, ForeignKey(
         "roles.id", ondelete="CASCADE"), nullable=False)
-    role = relationship("Role", back_populates="privilege_role")
+    role = relationship("Role", back_populates="privilege_roles")
     privilege_id = Column(String, ForeignKey(
         "privileges.id", ondelete="CASCADE"), nullable=False)
-    privilege = relationship("Privilege", back_populates="privilege_role")
+    privilege = relationship("Privilege", back_populates="privilege_roles")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
@@ -106,12 +106,12 @@ class Profil(Base):
     
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
-    owner = relationship("User", back_populates="profil")
+    owner = relationship("User", back_populates="profils")
     
     
     entertainment_sites_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="profil")
+    entertainment_site = relationship("EntertainmentSite", back_populates="profils")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
@@ -120,8 +120,8 @@ class Profil(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées countryId
-    profil_role = relationship("ProfilRole", back_populates="profil")
-    profil_privilege = relationship("ProfilPrivilege", back_populates="profil")
+    profil_roles = relationship("ProfilRole", back_populates="profil")
+    profil_privileges = relationship("ProfilPrivilege", back_populates="profil")
     
 # ProfilRole : to do   
 class ProfilRole(Base):
@@ -132,10 +132,10 @@ class ProfilRole(Base):
     
     profil_id = Column(String, ForeignKey(
         "profils.id", ondelete="CASCADE"), nullable=False)
-    profil = relationship("Profil", back_populates="profil_role")
+    profil = relationship("Profil", back_populates="profil_roles")
     role_id = Column(String, ForeignKey(
         "roles.id", ondelete="CASCADE"), nullable=False)
-    role = relationship("Role", back_populates="profil_role")
+    role = relationship("Role", back_populates="profil_roles")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
@@ -144,7 +144,7 @@ class ProfilRole(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    profil = relationship("Profil", back_populates="profil_role")
+    profil = relationship("Profil", back_populates="profil_roles")
     
     
 # ProfilPrivilege : to do   
@@ -156,10 +156,10 @@ class ProfilPrivilege(Base):
     
     profil_id = Column(String, ForeignKey(
         "profils.id", ondelete="CASCADE"), nullable=False)
-    profil = relationship("Profil", back_populates="profil_privilege")
+    profil = relationship("Profil", back_populates="profil_privileges")
     privilege_id = Column(String, ForeignKey(
         "privileges.id", ondelete="CASCADE"), nullable=False)
-    privilege = relationship("Privilege", back_populates="profil_privilege")
+    privilege = relationship("Privilege", back_populates="profil_privileges")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
@@ -168,7 +168,7 @@ class ProfilPrivilege(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    profil = relationship("Profil", back_populates="profil_privilege")
+    profil = relationship("Profil", back_populates="profil_privileges")
     
 
     ######################## Card #############################
@@ -188,7 +188,7 @@ class FamilyCard(Base):
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
     # Colonnes étrangères inversées
-    card = relationship("Card", back_populates="family_card")
+    cards = relationship("Card", back_populates="family_card")
 
 
 # Card : doing  
@@ -208,12 +208,12 @@ class Card(Base):
     # relationship
     family_card_id = Column(String, ForeignKey(
         "family_cards.id", ondelete="CASCADE"), nullable=False)
-    family_card = relationship("FamilyCard", back_populates="card")
+    family_card = relationship("FamilyCard", back_populates="cards")
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="card")
+    entertainment_site = relationship("EntertainmentSite", back_populates="cards")
     # Colonnes étrangères inversées
-    menu = relationship("Menu", back_populates="card")
+    menus = relationship("Menu", back_populates="card")
 
     
     
@@ -232,7 +232,7 @@ class TypeProduct(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    product = relationship("Product", back_populates="type_product")
+    products = relationship("Product", back_populates="type_product")
     
 # Product : doing     
 class Product(Base):
@@ -252,9 +252,9 @@ class Product(Base):
     # relationship
     type_product_id = Column(String, ForeignKey(
         "type_products.id", ondelete="CASCADE"), nullable=False)
-    type_product = relationship("TypeProduct", back_populates="product")
+    type_product = relationship("TypeProduct", back_populates="products")
     # Colonnes étrangères inversées
-    menu = relationship("Menu", back_populates="product")
+    menus = relationship("Menu", back_populates="product")
     
 # Menu : doing    
 class Menu(Base):
@@ -271,11 +271,11 @@ class Menu(Base):
     # relationship
     product_id = Column(String, ForeignKey(
         "products.id", ondelete="CASCADE"), nullable=False)
-    product = relationship("Product", back_populates="menu")
+    product = relationship("Product", back_populates="menus")
     
     card_id = Column(String, ForeignKey(
         "cards.id", ondelete="CASCADE"), nullable=False)
-    card = relationship("Card", back_populates="menu")
+    card = relationship("Card", back_populates="menus")
     
     
     
@@ -295,7 +295,7 @@ class Country(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    town = relationship("Town", back_populates="country")
+    towns = relationship("Town", back_populates="country")
 
 # Town : doing  
 class Town(Base):
@@ -312,10 +312,10 @@ class Town(Base):
     
     country_id = Column(String, ForeignKey(
         "contries.id", ondelete="CASCADE"), nullable=False)
-    country = relationship("Country", back_populates="town")
+    country = relationship("Country", back_populates="towns")
     
     # Colonnes étrangères inversées
-    quater = relationship("Quarter", back_populates="town")
+    quaters = relationship("Quarter", back_populates="town")
 
 # Quarter : doing  
 class Quarter(Base):
@@ -332,10 +332,10 @@ class Quarter(Base):
     
     town_id = Column(String, ForeignKey(
         "towns.id", ondelete="CASCADE"), nullable=False)
-    town = relationship("Town", back_populates="quater")
+    town = relationship("Town", back_populates="quaters")
     
     # Colonnes étrangères inversées countryId
-    entertainment_site = relationship("EntertainmentSite", back_populates="quarter")
+    entertainment_sites = relationship("EntertainmentSite", back_populates="quarter")
 
 # CategorySite : doing
 class CategorySite(Base):
@@ -352,7 +352,7 @@ class CategorySite(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    entertainment_site = relationship("EntertainmentSite", back_populates="category_site")
+    entertainment_sites = relationship("EntertainmentSite", back_populates="category_site")
  
 # Reservation : doing
 class Reservation(Base):
@@ -371,7 +371,7 @@ class Reservation(Base):
     active = Column(Boolean, default=True)
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="reservation")
+    entertainment_site = relationship("EntertainmentSite", back_populates="reservations")
     
  
  
@@ -390,7 +390,7 @@ class Comment(Base):
     active = Column(Boolean, default=True)
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="comment")
+    entertainment_site = relationship("EntertainmentSite", back_populates="comments")
     
     
  
@@ -409,10 +409,10 @@ class Program(Base):
     active = Column(Boolean, default=True)
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="program")
+    entertainment_site = relationship("EntertainmentSite", back_populates="programs")
     
     # Colonnes étrangères inversées
-    schedule_time = relationship("ScheduleTime", back_populates="program")
+    schedule_time = relationship("ScheduleTime", back_populates="programs")
  
 
  
@@ -432,7 +432,7 @@ class ScheduleTime(Base):
     active = Column(Boolean, default=True)
     program_id = Column(String, ForeignKey(
         "programs.id", ondelete="CASCADE"), nullable=False)
-    program = relationship("Program", back_populates="schedule_time")
+    programs = relationship("Program", back_populates="schedule_time")
     
  
  
@@ -457,25 +457,25 @@ class EntertainmentSite(Base):
     
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
-    owner = relationship("User", back_populates="entertainment_site")
+    owner = relationship("User", back_populates="entertainment_sites")
     
     quarter_id = Column(String, ForeignKey(
         "quarters.id", ondelete="CASCADE"), nullable=False)
-    quarter = relationship("Quarter", back_populates="entertainment_site")
+    quarter = relationship("Quarter", back_populates="entertainment_sites")
     
     category_site_id = Column(String, ForeignKey(
         "category_sites.id", ondelete="CASCADE"), nullable=False)
-    category_site = relationship("CategorySite", back_populates="entertainment_site")
+    category_site = relationship("CategorySite", back_populates="entertainment_sites")
     
     # Colonnes étrangères inversées countryId
-    card = relationship("Card", back_populates="entertainment_site")
-    reservation = relationship("Reservation", back_populates="entertainment_site")
-    comment = relationship("Comment", back_populates="entertainment_site")
-    program = relationship("Program", back_populates="entertainment_site")
-    anounce = relationship("Anounce", back_populates="entertainment_site")
-    event = relationship("Event", back_populates="entertainment_site")
-    profil = relationship("Profil", back_populates="entertainment_site")
-    entertainment_site_multimedia = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
+    cards = relationship("Card", back_populates="entertainment_site")
+    reservations = relationship("Reservation", back_populates="entertainment_site")
+    comments = relationship("Comment", back_populates="entertainment_site")
+    programs = relationship("Program", back_populates="entertainment_site")
+    anounces = relationship("Anounce", back_populates="entertainment_site")
+    events = relationship("Event", back_populates="entertainment_site")
+    profils = relationship("Profil", back_populates="entertainment_site")
+    entertainment_site_multimedias = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
     
     ###################### Anounce #########################
     
@@ -495,10 +495,10 @@ class Anounce(Base):
     active = Column(Boolean, default=True)
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="anounce")
+    entertainment_site = relationship("EntertainmentSite", back_populates="anounces")
     
     # Colonnes étrangères inversées
-    anounce_multimedia = relationship("AnounceMultimedia", back_populates="anounce")
+    anounce_multimedias = relationship("AnounceMultimedia", back_populates="anounce")
     
      
 # Event : doing
@@ -521,14 +521,13 @@ class Event(Base):
     active = Column(Boolean, default=True)
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="event")
+    entertainment_site = relationship("EntertainmentSite", back_populates="events")
     label_event_id = Column(String, ForeignKey(
         "label_events.id", ondelete="CASCADE"), nullable=False)
-    label_event = relationship("LabelEvent", back_populates="event")
+    label_event = relationship("LabelEvent", back_populates="events")
     
     # Colonnes étrangères inversées
-    entertainment_site = relationship("EntertainmentSite", back_populates="event")
-    event_multimedia = relationship("EventMultimedia", back_populates="event")
+    event_multimedias = relationship("EventMultimedia", back_populates="event")
     
     
 # LabelEvent : doing   
@@ -546,7 +545,7 @@ class LabelEvent(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    event = relationship("Event", back_populates="label_event")
+    events = relationship("Event", back_populates="label_event")
     
 
 # AnounceMultimedia : to doing    
@@ -564,7 +563,7 @@ class AnounceMultimedia(Base):
     # relationship
     anounce_id = Column(String, ForeignKey(
         "anounces.id", ondelete="CASCADE"), nullable=False)
-    anounce = relationship("Anounce", back_populates="anounce_multimedia")
+    anounce = relationship("Anounce", back_populates="anounce_multimedias")
 
 # EvenMultimedia : to doing    
 class EventMultimedia(Base):
@@ -581,7 +580,7 @@ class EventMultimedia(Base):
     # relationship
     event_id = Column(String, ForeignKey(
         "events.id", ondelete="CASCADE"), nullable=False)
-    event = relationship("Event", back_populates="event_multimedia")
+    event = relationship("Event", back_populates="event_multimedias")
 
 # AnounceMultimedia : to doing    
 class EntertainmentSiteMultimedia(Base):
@@ -598,5 +597,5 @@ class EntertainmentSiteMultimedia(Base):
     # relationship
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="entertainment_site_multimedia")
+    entertainment_site = relationship("EntertainmentSite", back_populates="entertainment_site_multimedias")
     

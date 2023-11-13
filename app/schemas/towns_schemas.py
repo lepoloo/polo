@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator
 from datetime import datetime, date
 from enum import Enum
 from typing import Optional
-from app.schemas import countries_schemas
+from app.schemas.countries_schemas import CountryListing
 
 class Town(BaseModel):
     name: str
@@ -18,6 +18,7 @@ class TownCreate(Town):
 class TownListing(Town):
     id: str
     refnumber: str
+    country: CountryListing
     # country_id: countries_schemas.CountryListing
     
     class Config:
@@ -27,6 +28,7 @@ class TownDetail(TownListing):
     
     created_at: datetime
     created_by: str
+    country: CountryListing
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
     
