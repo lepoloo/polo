@@ -68,16 +68,16 @@ async def get_media(image_name: str,media_use: str):
       
 #     return responses
 
-# @router.get("/images/[{image_names}],{media_use}")
-# async def get_media_files(image_names: List[str], media_use: str):
-#     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+@router.get("/images/{image_names:List[str]}/{media_use:str}")
+async def get_media_files(image_names: List[str], media_use: str):
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
     
-#     responses = []
-#     for image_name in image_names:
-#         image_path = os.path.join(child_path, image_name)
-#         responses.append(FileResponse(image_path))
+    responses = []
+    for image_name in image_names:
+        image_path = os.path.join(child_path, image_name)
+        responses.append(FileResponse(image_path))
       
-#     return responses
+    return responses
 
 
 @router.post("/uploadfiles/")

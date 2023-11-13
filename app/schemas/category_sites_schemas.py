@@ -10,7 +10,7 @@ class CategorySite(BaseModel):
     
 
 class CategorySiteCreate(CategorySite):
-   pass
+   image: str
 
 
 class CategorySiteListing(CategorySite):
@@ -21,7 +21,7 @@ class CategorySiteListing(CategorySite):
         from_attributes = True 
 
 class CategorySiteDetail(CategorySiteListing):
-    
+    image: str
     created_at: datetime
     created_by: str
     updated_at: Optional[datetime] = None

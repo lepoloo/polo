@@ -18,7 +18,7 @@ class TownCreate(Town):
 class TownListing(Town):
     id: str
     refnumber: str
-    country: CountryListing
+    # country: CountryListing
     # country_id: countries_schemas.CountryListing
     
     class Config:
@@ -28,7 +28,7 @@ class TownDetail(TownListing):
     
     created_at: datetime
     created_by: str
-    country: CountryListing
+    # country: CountryListing
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
     

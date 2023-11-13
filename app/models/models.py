@@ -345,6 +345,7 @@ class CategorySite(Base):
     refnumber = Column(String, unique=True, nullable=False)
     name = Column(String, unique=True, index=True, nullable=False)
     description = Column(String(length=65535), nullable=False)
+    image = Column(String, index=True, unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
