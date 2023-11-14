@@ -1,4 +1,4 @@
-from sqlalchemy import Enum,Column, Integer, String, Double, TIMESTAMP, Date, Boolean, DateTime, text,ForeignKey
+from sqlalchemy import Enum,Column, Integer, String, Double, TIMESTAMP, Date, Boolean, DateTime, text,ForeignKey,ARRAY
 from sqlalchemy.sql import func
 from app.database import Base
 from sqlalchemy.orm import relationship
@@ -455,6 +455,7 @@ class EntertainmentSite(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
+    # images = Column(ARRAY(String))
     
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
@@ -477,10 +478,10 @@ class EntertainmentSite(Base):
     events = relationship("Event", back_populates="entertainment_site")
     profils = relationship("Profil", back_populates="entertainment_site")
     entertainment_site_multimedias = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
+
     
-    ###################### Anounce #########################
-    
-     
+    ###################### Anounce #########################  
+
 # Anounce : doing
 class Anounce(Base):
     __tablename__ = "anounces"

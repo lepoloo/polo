@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator, constr,Field
 from datetime import datetime, date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 class EntertainmentSite(BaseModel):
     name: str
@@ -17,7 +17,8 @@ class EntertainmentSite(BaseModel):
     
 
 class EntertainmentSiteCreate(EntertainmentSite):
-   pass
+    pass
+#    images: List[str]
 
 
 class EntertainmentSiteListing(EntertainmentSite):
@@ -28,7 +29,7 @@ class EntertainmentSiteListing(EntertainmentSite):
         from_attributes = True 
 
 class EntertainmentSiteDetail(EntertainmentSiteListing):
-    
+    # images: List[str]
     created_at: datetime
     created_by: str
     updated_at: Optional[datetime] = None
