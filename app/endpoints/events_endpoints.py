@@ -65,6 +65,15 @@ async def detail_event(event_id: str, db: Session = Depends(get_db)):
     event_query = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"event with id: {event_id} does not exist")
+    
+    event_query.nb_visite+= 1
+    try:
+        db.commit() # pour faire l'enregistrement
+        db.refresh(event_query)# pour renvoyer le résultat
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
+    # event_query = db.query(models.Event).filter(models.Event.id == event_id).first()
     return jsonable_encoder(event_query)
 
 # Get an event

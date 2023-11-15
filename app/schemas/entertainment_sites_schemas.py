@@ -5,11 +5,11 @@ from typing import Optional, List
 
 class EntertainmentSite(BaseModel):
     name: str
-    status: str
     description: str = Field(..., max_length=65535)
     longitude: str = Field(..., description="Longitude position information of fite.")
     latitude: str = Field(..., description="Longitude position information of fite.")
-    owner_id: str
+    # nb_visite: str
+    # owner_id: str
     quarter_id: str
     category_site_id: str
     
@@ -23,7 +23,9 @@ class EntertainmentSiteCreate(EntertainmentSite):
 
 class EntertainmentSiteListing(EntertainmentSite):
     id: str
+    owner_id: str
     refnumber: str
+    nb_visite: str
     
     class Config:
         from_attributes = True 

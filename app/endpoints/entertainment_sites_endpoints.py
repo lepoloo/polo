@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
 from configs.settings import admin_mail,PROJECT_NAME
 import random, uuid
+from utils.users_utils import send_email
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
@@ -34,8 +35,8 @@ async def create_entertainment_site(new_entertainment_site_c: entertainment_site
     
     author = current_user.id
     
-    new_entertainment_site= models.EntertainmentSite(id = concatenated_uuid, **new_entertainment_site_c.dict(), refnumber = concatenated_num_ref, created_by = author)
-    
+    new_entertainment_site= models.EntertainmentSite(id = concatenated_uuid, **new_entertainment_site_c.dict(), refnumber = concatenated_num_ref,owner_id = author , created_by = author)
+    print(new_entertainment_site)
     try:
         db.add(new_entertainment_site )# pour ajouter une tuple
         db.commit() # pour faire l'enregistrement
@@ -44,6 +45,11 @@ async def create_entertainment_site(new_entertainment_site_c: entertainment_site
         db.rollback()
         raise HTTPException(status_code=403, detail="Somthing is wrong in the process, pleace try later sorry!")
     
+    # envois du mail au compte admin
+        to_email = admin_mail
+        subject = f"creation of a new entertainment site"
+        content = f"réferance site : {concatenated_num_ref}, application_name : {PROJECT_NAME},message : Entertaiment site creation request, propritaire : {current_user.name} {current_user.surname} , Username : {current_user.username}, Phone : {current_user.phone}, Email : {current_user.email},operation : Creation Entertainment site. "
+        send_email(to_email, subject, content)
     return jsonable_encoder(new_entertainment_site)
 
 # Get all entertainment_sites requests
@@ -56,7 +62,15 @@ async def read_entertainment_sites_actif(skip: int = 0, limit: int = 100, db: Se
     if not entertainment_sites_queries:
        
         raise HTTPException(status_code=404, detail="entertainment_site not found")
-                        
+    
+    entertainment_sites_queries.nb_visite+= 1
+    try:
+        db.commit() # pour faire l'enregistrement
+        db.refresh(entertainment_sites_queries)# pour renvoyer le résultat
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
+                       
     return jsonable_encoder(entertainment_sites_queries)
 
 

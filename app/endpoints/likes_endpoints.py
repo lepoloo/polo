@@ -88,7 +88,7 @@ async def detail_like_by_attribute(refnumber: Optional[str] = None, entertainmen
     return jsonable_encoder(like_query)
 
 # Get an like
-@router.get("/get/{like_id}", status_code=status.HTTP_200_OK, response_model=likes_schemas.likeDetail)
+@router.get("/get/{like_id}", status_code=status.HTTP_200_OK, response_model=likes_schemas.LikeDetail)
 async def detail_like(like_id: str, db: Session = Depends(get_db)):
     like_query = db.query(models.Like).filter(models.Like.id == like_id).first()
     if not like_query:

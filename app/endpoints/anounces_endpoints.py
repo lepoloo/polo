@@ -86,6 +86,16 @@ async def detail_anounce(anounce_id: str, db: Session = Depends(get_db)):
     anounce_query = db.query(models.Anounce).filter(models.Anounce.id == anounce_id).first()
     if not anounce_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"anounce with id: {anounce_id} does not exist")
+    
+    anounce_query.nb_visite+= 1
+    try:
+        db.commit() # pour faire l'enregistrement
+        db.refresh(anounce_query)# pour renvoyer le résultat
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
+    # anounce_query = db.query(models.Event).filter(models.Event.id == event_id).first()
+    
     return jsonable_encoder(anounce_query)
 
 

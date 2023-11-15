@@ -36,6 +36,8 @@ class User(Base):
     # Colonnes étrangères inversées
     entertainment_sites = relationship("EntertainmentSite", back_populates="owner")
     profils = relationship("Profil", back_populates="owner")
+    likes = relationship("Like", back_populates="owner")
+    favorites = relationship("Favorite", back_populates="owner")
     
     
 
@@ -446,7 +448,7 @@ class EntertainmentSite(Base):
     refnumber = Column(String, unique=True, nullable=False)
     name = Column(String, unique=True, index=True, nullable=False)
     description = Column(String(length=65535), nullable=True)
-    status = Column(String, unique=True, nullable=False)
+    nb_visite = Column(Integer, nullable=False, server_default= 0)
     address = Column(String, unique=True, nullable=False)
     longitude = Column(String, unique=True, nullable=False)
     latitude = Column(String, unique=True, nullable=False)
@@ -491,6 +493,7 @@ class Anounce(Base):
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
     name = Column(String, unique=True, nullable=False)
+    nb_visite = Column(Integer, nullable=False, server_default= 0)
     description = Column(String(length=65535), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
@@ -513,7 +516,7 @@ class Event(Base):
     refnumber = Column(String, unique=True, nullable=False)
     name = Column(String, unique=True, nullable=False)
     description = Column(String(length=65535), nullable=True)
-    status = Column(String, unique=True, nullable=False)
+    nb_visite = Column(Integer, nullable=False, server_default= 0)
     start_date = Column(DateTime)
     end_date = Column(DateTime)
     start_hour = Column(String, nullable=False)
@@ -607,11 +610,12 @@ class EntertainmentSiteMultimedia(Base):
     ###################### Likes and Favorites #########################  
 
 # Like : doing
-class Like(Base):
-    __tablename__ = "likes"
+class Note(Base):
+    __tablename__ = "notes"
 
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
+    note = Column(Double, nullable=False, server_default=)
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
     owner = relationship("User", back_populates="likes")
