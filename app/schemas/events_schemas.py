@@ -8,7 +8,6 @@ class Event(BaseModel):
     description: str = Field(..., max_length=65535)
     label_event_id: str
     entertainment_site_id: str
-    status: str
     start_date: datetime
     end_date: datetime
     start_hour: str
@@ -28,7 +27,7 @@ class EventListing(Event):
         from_attributes = True 
 
 class EventDetail(EventListing):
-    
+    nb_visite: str
     created_at: datetime
     created_by: str
     updated_at: Optional[datetime] = None
