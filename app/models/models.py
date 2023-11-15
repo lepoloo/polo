@@ -478,6 +478,8 @@ class EntertainmentSite(Base):
     events = relationship("Event", back_populates="entertainment_site")
     profils = relationship("Profil", back_populates="entertainment_site")
     entertainment_site_multimedias = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
+    likes = relationship("Like", back_populates="entertainment_site")
+    favorites = relationship("Favorite", back_populates="entertainment_site")
 
     
     ###################### Anounce #########################  
@@ -601,3 +603,42 @@ class EntertainmentSiteMultimedia(Base):
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
     entertainment_site = relationship("EntertainmentSite", back_populates="entertainment_site_multimedias")
     
+    
+    ###################### Likes and Favorites #########################  
+
+# Like : doing
+class Like(Base):
+    __tablename__ = "likes"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    owner_id = Column(String, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    owner = relationship("User", back_populates="likes")
+    entertainment_site_id = Column(String, ForeignKey(
+        "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
+    entertainment_site = relationship("EntertainmentSite", back_populates="likes")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+
+# Anounce : doing
+class Favorite(Base):
+    __tablename__ = "favorites"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    owner_id = Column(String, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    owner = relationship("User", back_populates="favorites")
+    entertainment_site_id = Column(String, ForeignKey(
+        "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
+    entertainment_site = relationship("EntertainmentSite", back_populates="favorites")
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)

@@ -31,6 +31,8 @@ from app.endpoints.profil_roles_endpoints import router as profil_roles_routers
 from app.endpoints.profil_privileges_endpoints import router as profil_privileges_routers
 from app.endpoints.anounce_multimedias_endpoints import router as anounce_multimedias_routers
 from app.endpoints.event_multimedias_endpoints import router as event_multimedias_routers
+from app.endpoints.likes_endpoints import router as likes_routers
+from app.endpoints.favorites_endpoints import router as favorites_routers
 from app.endpoints.entertainment_site_multimedias_endpoints import router as entertainment_site_multimedias_routers
 
 logging.basicConfig(level=logging.INFO)  # Niveau de journalisation souhaité, par exemple INFO
@@ -81,6 +83,8 @@ app.include_router(label_events_routers)
 app.include_router(events_routers)
 app.include_router(event_multimedias_routers)
 
+app.include_router(likes_routers)
+app.include_router(favorites_routers)
 
 
 
