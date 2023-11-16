@@ -50,7 +50,7 @@ async def create_Card(new_card_c: cards_schemas.CardCreate, db: Session = Depend
 @router.get("/get_all_actif/", response_model=List[cards_schemas.CardListing])
 async def read_Cards_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    cards_queries = db.query(models.Card).filter(models.Card.active == "True", ).offset(skip).limit(limit).all()
+    cards_queries = db.query(models.Card).filter(models.Card.active == "True").order_by(models.Card.name).offset(skip).limit(limit).all()
     
     # pas de Card
     if not cards_queries:
@@ -67,15 +67,15 @@ async def read_Cards_actif(skip: int = 0, limit: int = 100, db: Session = Depend
 async def detail_Card_by_attribute(refnumber: Optional[str] = None, family_card_id: Optional[str] = None, name: Optional[str] = None, description: Optional[str] = None, multimedia: Optional[float] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     card_query = {} # objet vide
     if refnumber is not None :
-        card_query = db.query(models.Card).filter(models.Card.refnumber == refnumber).offset(skip).limit(limit).all()
+        card_query = db.query(models.Card).filter(models.Card.refnumber == refnumber, models.Card.active == "True").order_by(models.Card.name).offset(skip).limit(limit).all()
     if name is not None :
-        card_query = db.query(models.Card).filter(models.Card.name == name).offset(skip).limit(limit).all()
+        card_query = db.query(models.Card).filter(models.Card.name.contains(name), models.Card.active == "True").order_by(models.Card.name).offset(skip).limit(limit).all()
     if family_card_id is not None :
-        card_query = db.query(models.family_card_id).filter(models.Card.family_card_id == family_card_id).offset(skip).limit(limit).all()
+        card_query = db.query(models.family_card_id).filter(models.Card.family_card_id == family_card_id, models.Card.active == "True").order_by(models.Card.name).offset(skip).limit(limit).all()
     if description is not None:
-        card_query = db.query(models.Card).filter(models.Card.description == description).offset(skip).limit(limit).all()
+        card_query = db.query(models.Card).filter(models.Card.description.contains(description), models.Card.active == "True").offset(skip).order_by(models.Card.name).limit(limit).all()
     if multimedia is not None :
-        card_query = db.query(models.Card).filter(models.Card.multimedia == multimedia).offset(skip).limit(limit).all()
+        card_query = db.query(models.Card).filter(models.Card.multimedia == multimedia, models.Card.active == "True").offset(skip).order_by(models.Card.name).limit(limit).all()
     
     
     if not card_query:
@@ -154,7 +154,7 @@ async def delete_Card(card_id: str,  db: Session = Depends(get_db), current_user
 @router.get("/get_all_inactive/", response_model=List[cards_schemas.CardListing])
 async def read_Cards_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    cards_queries = db.query(models.Card).filter(models.Card.active == "False", ).offset(skip).limit(limit).all()
+    cards_queries = db.query(models.Card).filter(models.Card.active == "False").order_by(models.Card.name).offset(skip).limit(limit).all()
     
     # pas de Card
     if not cards_queries:

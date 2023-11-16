@@ -50,7 +50,7 @@ async def create_anounce_multimedia(new_anounce_multimedia_c: anounce_multimedia
 @router.get("/get_all_actif/", response_model=List[anounce_multimedias_schemas.AnounceMultimediaListing])
 async def read_anounce_multimedias_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    anounce_multimedias_queries = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.active == "True", ).offset(skip).limit(limit).all()
+    anounce_multimedias_queries = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.active == "True").order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
     
     # pas de anounce_multimedia
     if not anounce_multimedias_queries:
@@ -59,18 +59,18 @@ async def read_anounce_multimedias_actif(skip: int = 0, limit: int = 100, db: Se
                         
     return jsonable_encoder(anounce_multimedias_queries)
 
-# Get all anounce_multimedias research requests
-@router.get("/research_actif/", response_model=List[anounce_multimedias_schemas.AnounceMultimediaListing])
-async def read_anounce_multimedias_search_actif(search: Optional[str] = "", skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+# # Get all anounce_multimedias research requests
+# @router.get("/research_actif/", response_model=List[anounce_multimedias_schemas.AnounceMultimediaListing])
+# async def read_anounce_multimedias_search_actif(search: Optional[str] = "", skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    anounce_multimedias_queries = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.active == "True", models.AnounceMultimedia.link_media.contains(search) ).offset(skip).limit(limit).all()
+#     anounce_multimedias_queries = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.active == "True", models.AnounceMultimedia.link_media.contains(search) ).order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
     
-    # pas de anounce_multimedia
-    if not anounce_multimedias_queries:
+#     # pas de anounce_multimedia
+#     if not anounce_multimedias_queries:
        
-        raise HTTPException(status_code=404, detail="anounce_multimedia not found")
+#         raise HTTPException(status_code=404, detail="anounce_multimedia not found")
                         
-    return jsonable_encoder(anounce_multimedias_queries)
+#     return jsonable_encoder(anounce_multimedias_queries)
 
 # Get an anounce_multimedia
 @router.get("/get/{anounce_multimedia_id}", status_code=status.HTTP_200_OK, response_model=anounce_multimedias_schemas.AnounceMultimediaDetail)
@@ -86,11 +86,13 @@ async def detail_anounce_multimedia(anounce_multimedia_id: str, db: Session = De
 async def detail_anounce_multimedia_by_attribute(refnumber: Optional[str] = None, link_media: Optional[str] = None, anounce_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     anounce_multimedia_query = {} # objet vide
     if refnumber is not None :
-        anounce_multimedia_query = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.refnumber == refnumber).offset(skip).limit(limit).all()
+        anounce_multimedia_query = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.refnumber == refnumber, models.AnounceMultimedia.active == "True").order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
     if link_media is not None :
-        anounce_multimedia_query = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.link_media == link_media).offset(skip).limit(limit).all()
+        # anounce_multimedia_query = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.link_media == link_media).order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
+        anounce_multimedia_query = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.link_media.contains(link_media), models.AnounceMultimedia.active == "True").order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
+        
     if anounce_id is not None :
-        anounce_multimedia_query = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.anounce_id == anounce_id).offset(skip).limit(limit).all()
+        anounce_multimedia_query = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.anounce_id == anounce_id, models.AnounceMultimedia.active == "True").order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
     
     
     if not anounce_multimedia_query:
@@ -155,7 +157,7 @@ async def delete_anounce_multimedia(anounce_multimedia_id: str,  db: Session = D
 @router.get("/get_all_inactive/", response_model=List[anounce_multimedias_schemas.AnounceMultimediaListing])
 async def read_anounce_multimedias_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    anounce_multimedias_queries = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.active == "False", ).offset(skip).limit(limit).all()
+    anounce_multimedias_queries = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.active == "False", ).order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
     
     # pas de anounce_multimedia
     if not anounce_multimedias_queries:

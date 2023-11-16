@@ -50,7 +50,7 @@ async def create_country(new_country_c: countries_schemas.CountryCreate, db: Ses
 @router.get("/get_all_actif/", response_model=List[countries_schemas.CountryListing])
 async def read_countrys_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    countries_queries = db.query(models.Country).filter(models.Country.active == "True", ).offset(skip).limit(limit).all()
+    countries_queries = db.query(models.Country).filter(models.Country.active == "True").order_by(models.Country.name).offset(skip).limit(limit).all()
     
     # pas de country
     if not countries_queries:
@@ -67,9 +67,9 @@ async def read_countrys_actif(skip: int = 0, limit: int = 100, db: Session = Dep
 async def detail_country_by_attribute(refnumber: Optional[str] = None, name: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     country_query = {} # objet vide
     if refnumber is not None :
-        country_query = db.query(models.Country).filter(models.Country.refnumber == refnumber).offset(skip).limit(limit).all()
+        country_query = db.query(models.Country).filter(models.Country.refnumber == refnumber, models.Country.active == "True").order_by(models.Country.name).offset(skip).limit(limit).all()
     if name is not None :
-        country_query = db.query(models.Country).filter(models.Country.name == name).offset(skip).limit(limit).all()
+        country_query = db.query(models.Country).filter(models.Country.name.contains(name), models.Country.active == "True" ).order_by(models.Country.name).offset(skip).limit(limit).all()
     
     
     if not country_query:
@@ -142,7 +142,7 @@ async def delete_country(country_id: str,  db: Session = Depends(get_db), curren
 @router.get("/get_all_inactive/", response_model=List[countries_schemas.CountryListing])
 async def read_countrys_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    countries_queries = db.query(models.Country).filter(models.Country.active == "False", ).offset(skip).limit(limit).all()
+    countries_queries = db.query(models.Country).filter(models.Country.active == "False").order_by(models.Country.name).offset(skip).limit(limit).all()
     
     # pas de country
     if not countries_queries:

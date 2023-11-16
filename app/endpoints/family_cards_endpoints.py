@@ -50,7 +50,7 @@ async def create_family_card(new_family_card_c: family_cards_schemas.FamilyCardC
 @router.get("/get_all_actif/", response_model=List[family_cards_schemas.FamilyCardListing])
 async def read_family_card_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    family_cards_queries = db.query(models.FamilyCard).filter(models.FamilyCard.active == "True", ).offset(skip).limit(limit).all()
+    family_cards_queries = db.query(models.FamilyCard).filter(models.FamilyCard.active == "True").order_by(models.FamilyCard.name).offset(skip).limit(limit).all()
     
     # pas de family_card
     if not family_cards_queries:
@@ -77,9 +77,9 @@ async def detail_family_card(family_card_id: str, db: Session = Depends(get_db))
 async def detail_family_card_by_attribute(name: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     family_card_query = {} # objet vide
     if name is not None :
-        family_card_query = db.query(models.FamilyCard).filter(models.FamilyCard.name == name).offset(skip).limit(limit).all()
+        family_card_query = db.query(models.FamilyCard).filter(models.FamilyCard.name.contains(name), models.FamilyCard.active == "True").order_by(models.FamilyCard.name).offset(skip).limit(limit).all()
     if description is not None :
-        family_card_query = db.query(models.FamilyCard).filter(models.FamilyCard.description == description).offset(skip).limit(limit).all()
+        family_card_query = db.query(models.FamilyCard).filter(models.FamilyCard.description.contains(description), models.FamilyCard.active == "True").order_by(models.FamilyCard.name).offset(skip).limit(limit).all()
        
     
     if not family_card_query:
@@ -143,7 +143,7 @@ async def delete_family_card(family_card_id: str,  db: Session = Depends(get_db)
 @router.get("/get_all_inactive/", response_model=List[family_cards_schemas.FamilyCardListing])
 async def read_family_cards_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    family_cards_queries = db.query(models.FamilyCard).filter(models.FamilyCard.active == "False", ).offset(skip).limit(limit).all()
+    family_cards_queries = db.query(models.FamilyCard).filter(models.FamilyCard.active == "False").order_by(models.FamilyCard.name).offset(skip).limit(limit).all()
     
     # pas de family_card
     if not family_cards_queries:

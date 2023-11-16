@@ -51,7 +51,7 @@ async def create_type_product(new_type_product_c: type_products_schemas.TypeProd
 @router.get("/get_all_actif/", response_model=List[type_products_schemas.TypeProductListing])
 async def read_type_product_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    type_products_queries = db.query(models.TypeProduct).filter(models.TypeProduct.active == "True", ).offset(skip).limit(limit).all()
+    type_products_queries = db.query(models.TypeProduct).filter(models.TypeProduct.active == "True").order_by(models.TypeProduct.name).offset(skip).limit(limit).all()
     
     # pas de type_product
     if not type_products_queries:
@@ -78,9 +78,9 @@ async def detail_type_product(type_product_id: str, db: Session = Depends(get_db
 async def detail_type_product_by_attribute(name: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     type_product_query = {} # objet vide
     if name is not None :
-        type_product_query = db.query(models.TypeProduct).filter(models.TypeProduct.name == name).offset(skip).limit(limit).all()
+        type_product_query = db.query(models.TypeProduct).filter(models.TypeProduct.name.contains(name), models.TypeProduct.active == "True").order_by(models.TypeProduct.name).offset(skip).limit(limit).all()
     if description is not None :
-        type_product_query = db.query(models.TypeProduct).filter(models.TypeProduct.description == description).offset(skip).limit(limit).all()
+        type_product_query = db.query(models.TypeProduct).filter(models.TypeProduct.description.contains(description), models.TypeProduct.active == "True").order_by(models.TypeProduct.name).offset(skip).limit(limit).all()
        
     
     if not type_product_query:
@@ -144,7 +144,7 @@ async def delete_type_product(type_product_id: str,  db: Session = Depends(get_d
 @router.get("/get_all_inactive/", response_model=List[type_products_schemas.TypeProductListing])
 async def read_type_products_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    type_products_queries = db.query(models.TypeProduct).filter(models.TypeProduct.active == "False", ).offset(skip).limit(limit).all()
+    type_products_queries = db.query(models.TypeProduct).filter(models.TypeProduct.active == "False", ).order_by(models.TypeProduct.name).offset(skip).limit(limit).all()
     
     # pas de type_product
     if not type_products_queries:

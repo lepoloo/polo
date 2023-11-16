@@ -5,11 +5,10 @@ from typing import Optional, List
 
 class EntertainmentSite(BaseModel):
     name: str
+    address: str
     description: str = Field(..., max_length=65535)
     longitude: str = Field(..., description="Longitude position information of fite.")
     latitude: str = Field(..., description="Longitude position information of fite.")
-    # nb_visite: str
-    # owner_id: str
     quarter_id: str
     category_site_id: str
     
@@ -18,14 +17,13 @@ class EntertainmentSite(BaseModel):
 
 class EntertainmentSiteCreate(EntertainmentSite):
     pass
-#    images: List[str]
 
 
 class EntertainmentSiteListing(EntertainmentSite):
     id: str
     owner_id: str
     refnumber: str
-    nb_visite: str
+    nb_visite: int
     
     class Config:
         from_attributes = True 
@@ -45,7 +43,7 @@ class EntertainmentSiteDetail(EntertainmentSiteListing):
 class EntertainmentSiteUpdate(BaseModel):
     name: Optional[constr(max_length=256)] = None
     description: Optional[constr(max_length=65535)] = None
-    status: Optional[constr(max_length=256)] = None
+    nb_visite: Optional[int] = Field(None, ge=0)
     address: Optional[constr(max_length=256)] = None
     longitude: Optional[constr(max_length=256)] = None
     latitude: Optional[constr(max_length=256)] = None

@@ -50,7 +50,7 @@ async def create_product(new_product_c: products_schemas.ProductCreate, db: Sess
 @router.get("/get_all_actif/", response_model=List[products_schemas.ProductListing])
 async def read_products_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    products_queries = db.query(models.Product).filter(models.Product.active == "True", ).offset(skip).limit(limit).all()
+    products_queries = db.query(models.Product).filter(models.Product.active == "True").offset(skip).limit(limit).all()
     
     # pas de product
     if not products_queries:
@@ -67,15 +67,15 @@ async def read_products_actif(skip: int = 0, limit: int = 100, db: Session = Dep
 async def detail_product_by_attribute(refnumber: Optional[str] = None, type_product_id: Optional[str] = None, name: Optional[str] = None, description: Optional[str] = None, price: Optional[float] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     product_query = {} # objet vide
     if refnumber is not None :
-        product_query = db.query(models.Product).filter(models.Product.refnumber == refnumber).offset(skip).limit(limit).all()
+        product_query = db.query(models.Product).filter(models.Product.refnumber == refnumber, models.Product.active == "True").order_by(models.Product.name).offset(skip).limit(limit).all()
     if name is not None :
-        product_query = db.query(models.Product).filter(models.Product.name == name).offset(skip).limit(limit).all()
+        product_query = db.query(models.Product).filter(models.Product.name.contains(name), models.Product.active == "True").order_by(models.Product.name).offset(skip).limit(limit).all()
     if type_product_id is not None :
-        product_query = db.query(models.Product).filter(models.Product.type_product_id == type_product_id).offset(skip).limit(limit).all()
+        product_query = db.query(models.Product).filter(models.Product.type_product_id == type_product_id, models.Product.active == "True").order_by(models.Product.name).offset(skip).limit(limit).all()
     if description is not None:
-        product_query = db.query(models.Product).filter(models.Product.description == description).offset(skip).limit(limit).all()
+        product_query = db.query(models.Product).filter(models.Product.description.contains(description), models.Product.active == "True").order_by(models.Product.name).offset(skip).limit(limit).all()
     if price is not None :
-        product_query = db.query(models.Product).filter(models.Product.price == price).offset(skip).limit(limit).all()
+        product_query = db.query(models.Product).filter(models.Product.price == price, models.Product.active == "True").order_by(models.Product.name).offset(skip).limit(limit).all()
     
     
     if not product_query:
@@ -154,7 +154,7 @@ async def delete_product(product_id: str,  db: Session = Depends(get_db), curren
 @router.get("/get_all_inactive/", response_model=List[products_schemas.ProductListing])
 async def read_products_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    products_queries = db.query(models.Product).filter(models.Product.active == "False", ).offset(skip).limit(limit).all()
+    products_queries = db.query(models.Product).filter(models.Product.active == "False", ).order_by(models.Product.name).offset(skip).limit(limit).all()
     
     # pas de product
     if not products_queries:

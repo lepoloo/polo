@@ -50,7 +50,7 @@ async def create_reservation(new_reservation_c: reservations_schemas.Reservation
 @router.get("/get_all_actif/", response_model=List[reservations_schemas.ReservationListing])
 async def read_reservations_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    reservations_queries = db.query(models.Reservation).filter(models.Reservation.active == "True", ).offset(skip).limit(limit).all()
+    reservations_queries = db.query(models.Reservation).filter(models.Reservation.active == "True").order_by(models.Reservation.created_at).offset(skip).limit(limit).all()
     
     # pas de reservation
     if not reservations_queries:
@@ -67,15 +67,15 @@ async def read_reservations_actif(skip: int = 0, limit: int = 100, db: Session =
 async def detail_reservation_by_attribute(refnumber: Optional[str] = None, entertainment_site_id: Optional[str] = None, hour: Optional[str] = None, description: Optional[str] = None, nb_personne: Optional[int] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     reservation_query = {} # objet vide
     if refnumber is not None :
-        reservation_query = db.query(models.Reservation).filter(models.Reservation.refnumber == refnumber).offset(skip).limit(limit).all()
+        reservation_query = db.query(models.Reservation).filter(models.Reservation.refnumber == refnumber, models.Role.active == "True").order_by(models.Reservation.created_at).offset(skip).limit(limit).all()
     if hour is not None :
-        reservation_query = db.query(models.Reservation).filter(models.Reservation.hour == hour).offset(skip).limit(limit).all()
+        reservation_query = db.query(models.Reservation).filter(models.Reservation.hour == hour, models.Role.active == "True").order_by(models.Reservation.created_at).offset(skip).limit(limit).all()
     if entertainment_site_id is not None :
-        reservation_query = db.query(models.Reservation).filter(models.Reservation.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        reservation_query = db.query(models.Reservation).filter(models.Reservation.entertainment_site_id == entertainment_site_id, models.Role.active == "True").offset(skip).limit(limit).all()
     if description is not None:
-        reservation_query = db.query(models.Reservation).filter(models.Reservation.description == description).offset(skip).limit(limit).all()
+        reservation_query = db.query(models.Reservation).filter(models.Reservation.description.contains(description), models.Role.active == "True").order_by(models.Reservation.created_at).offset(skip).limit(limit).all()
     if nb_personne is not None :
-        reservation_query = db.query(models.Reservation).filter(models.Reservation.nb_personne == nb_personne).offset(skip).limit(limit).all()
+        reservation_query = db.query(models.Reservation).filter(models.Reservation.nb_personne == nb_personne, models.Role.active == "True").order_by(models.Reservation.created_at).offset(skip).limit(limit).all()
     
     
     if not reservation_query:
@@ -154,7 +154,7 @@ async def delete_reservation(reservation_id: str,  db: Session = Depends(get_db)
 @router.get("/get_all_inactive/", response_model=List[reservations_schemas.ReservationListing])
 async def read_reservations_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    reservations_queries = db.query(models.Reservation).filter(models.Reservation.active == "False", ).offset(skip).limit(limit).all()
+    reservations_queries = db.query(models.Reservation).filter(models.Reservation.active == "False", ).order_by(models.Reservation.created_at).offset(skip).limit(limit).all()
     
     # pas de reservation
     if not reservations_queries:

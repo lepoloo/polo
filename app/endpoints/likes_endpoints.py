@@ -59,7 +59,7 @@ async def create_like(new_like_c: likes_schemas.LikeCreate, db: Session = Depend
 @router.get("/get_all_actif/", response_model=List[likes_schemas.LikeListing])
 async def read_likes_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    likes_queries = db.query(models.Like).filter(models.Like.active == "True", ).offset(skip).limit(limit).all()
+    likes_queries = db.query(models.Like).filter(models.Like.active == "True").order_by(models.Like.create_at).offset(skip).limit(limit).all()
     
     # pas de like
     if not likes_queries:
@@ -76,11 +76,11 @@ async def read_likes_actif(skip: int = 0, limit: int = 100, db: Session = Depend
 async def detail_like_by_attribute(refnumber: Optional[str] = None, entertainment_site_id: Optional[str] = None, owner_id: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     like_query = {} # objet vide
     if refnumber is not None :
-        like_query = db.query(models.Like).filter(models.Like.refnumber == refnumber).offset(skip).limit(limit).all()
+        like_query = db.query(models.Like).filter(models.Like.refnumber == refnumber).order_by(models.Like.create_at).offset(skip).limit(limit).all()
     if owner_id is not None :
-        like_query = db.query(models.Like).filter(models.Like.owner_id == owner_id).offset(skip).limit(limit).all()
+        like_query = db.query(models.Like).filter(models.Like.owner_id == owner_id).order_by(models.Like.create_at).offset(skip).limit(limit).all()
     if entertainment_site_id is not None :
-        like_query = db.query(models.Like).filter(models.Like.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        like_query = db.query(models.Like).filter(models.Like.entertainment_site_id == entertainment_site_id).order_by(models.Like.create_at).offset(skip).limit(limit).all()
     
     
     if not like_query:

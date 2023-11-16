@@ -50,7 +50,7 @@ async def create_category_site(new_category_site_c: category_sites_schemas.Categ
 @router.get("/get_all_actif/", response_model=List[category_sites_schemas.CategorySiteListing])
 async def read_category_site_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    category_sites_queries = db.query(models.CategorySite).filter(models.CategorySite.active == "True", ).offset(skip).limit(limit).all()
+    category_sites_queries = db.query(models.CategorySite).filter(models.CategorySite.active == "True").order_by(models.CategorySite.name).offset(skip).limit(limit).all()
     
     # pas de category_site
     if not category_sites_queries:
@@ -77,9 +77,9 @@ async def detail_category_site(category_site_id: str, db: Session = Depends(get_
 async def detail_category_site_by_attribute(name: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     category_site_query = {} # objet vide
     if name is not None :
-        category_site_query = db.query(models.CategorySite).filter(models.CategorySite.name == name).offset(skip).limit(limit).all()
+        category_site_query = db.query(models.CategorySite).filter(models.CategorySite.name.contains(name), models.CategorySite.active == "True").order_by(models.CategorySite.name).offset(skip).limit(limit).all()
     if description is not None :
-        category_site_query = db.query(models.CategorySite).filter(models.CategorySite.description == description).offset(skip).limit(limit).all()
+        category_site_query = db.query(models.CategorySite).filter(models.CategorySite.description.contains(description), models.CategorySite.active == "True").order_by(models.CategorySite.name).offset(skip).limit(limit).all()
        
     
     if not category_site_query:
@@ -143,7 +143,7 @@ async def delete_category_site(category_site_id: str,  db: Session = Depends(get
 @router.get("/get_all_inactive/", response_model=List[category_sites_schemas.CategorySiteListing])
 async def read_category_sites_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    category_sites_queries = db.query(models.CategorySite).filter(models.CategorySite.active == "False", ).offset(skip).limit(limit).all()
+    category_sites_queries = db.query(models.CategorySite).filter(models.CategorySite.active == "False").order_by(models.CategorySite.name).offset(skip).limit(limit).all()
     
     # pas de category_site
     if not category_sites_queries:

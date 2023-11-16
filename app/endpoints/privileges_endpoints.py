@@ -50,7 +50,7 @@ async def create_privilege(new_privilege_c: privileges_schemas.PrivilegeCreate, 
 @router.get("/get_all_actif/", response_model=List[privileges_schemas.PrivilegeListing])
 async def read_privilege_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    privileges_queries = db.query(models.Privilege).filter(models.Privilege.active == "True", ).offset(skip).limit(limit).all()
+    privileges_queries = db.query(models.Privilege).filter(models.Privilege.active == "True").order_by(models.Privilege.name).offset(skip).limit(limit).all()
     
     # pas de privilege
     if not privileges_queries:
@@ -77,9 +77,9 @@ async def detail_privilege(privilege_id: str, db: Session = Depends(get_db)):
 async def detail_privilege_by_attribute(name: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     privilege_query = {} # objet vide
     if name is not None :
-        privilege_query = db.query(models.Privilege).filter(models.Privilege.name == name).offset(skip).limit(limit).all()
+        privilege_query = db.query(models.Privilege).filter(models.Privilege.name.contains(name)).order_by(models.Privilege.name).offset(skip).limit(limit).all()
     if description is not None :
-        privilege_query = db.query(models.Privilege).filter(models.Privilege.description == description).offset(skip).limit(limit).all()
+        privilege_query = db.query(models.Privilege).filter(models.Privilege.description.contains(description)).order_by(models.Privilege.name).offset(skip).limit(limit).all()
        
     
     if not privilege_query:
@@ -143,7 +143,7 @@ async def delete_privilege(privilege_id: str,  db: Session = Depends(get_db), cu
 @router.get("/get_all_inactive/", response_model=List[privileges_schemas.PrivilegeListing])
 async def read_privileges_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    privileges_queries = db.query(models.Privilege).filter(models.Privilege.active == "False", ).offset(skip).limit(limit).all()
+    privileges_queries = db.query(models.Privilege).filter(models.Privilege.active == "False").order_by(models.Privilege.name).offset(skip).limit(limit).all()
     
     # pas de privilege
     if not privileges_queries:

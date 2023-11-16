@@ -50,7 +50,7 @@ async def create_event_multimedia(new_event_multimedia_c: event_multimedias_sche
 @router.get("/get_all_actif/", response_model=List[event_multimedias_schemas.EventMultimediaListing])
 async def read_event_multimedias_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    event_multimedias_queries = db.query(models.EventMultimedia).filter(models.EventMultimedia.active == "True", ).offset(skip).limit(limit).all()
+    event_multimedias_queries = db.query(models.EventMultimedia).filter(models.EventMultimedia.active == "True").order_by(models.EventMultimedia.created_at).offset(skip).limit(limit).all()
     
     # pas de event_multimedia
     if not event_multimedias_queries:
@@ -73,11 +73,11 @@ async def detail_event_multimedia(event_multimedia_id: str, db: Session = Depend
 async def detail_event_multimedia_by_attribute(refnumber: Optional[str] = None, link_media: Optional[str] = None, event_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     event_multimedia_query = {} # objet vide
     if refnumber is not None :
-        event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.refnumber == refnumber).offset(skip).limit(limit).all()
+        event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.refnumber == refnumber, models.EventMultimedia.active == "True").order_by(models.EventMultimedia.created_at).offset(skip).limit(limit).all()
     if link_media is not None :
-        event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.link_media == link_media).offset(skip).limit(limit).all()
+        event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.link_media.contains(link_media), models.EventMultimedia.active == "True").order_by(models.EventMultimedia.created_at).offset(skip).limit(limit).all()
     if event_id is not None :
-        event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.event_id == event_id).offset(skip).limit(limit).all()
+        event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.event_id == event_id, models.EventMultimedia.active == "True").order_by(models.EventMultimedia.created_at).offset(skip).limit(limit).all()
     
     
     if not event_multimedia_query:

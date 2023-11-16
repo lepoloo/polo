@@ -22,12 +22,12 @@ class EventCreate(Event):
 class EventListing(Event):
     id: str
     refnumber: str
+    nb_visite: int
     
     class Config:
         from_attributes = True 
 
 class EventDetail(EventListing):
-    nb_visite: str
     created_at: datetime
     created_by: str
     updated_at: Optional[datetime] = None
@@ -43,7 +43,7 @@ class EventUpdate(BaseModel):
     description: Optional[constr(max_length=65535)] = None
     label_event_id: Optional[constr(max_length=256)] = None
     entertainment_site_id: Optional[constr(max_length=256)] = None
-    status: Optional[constr(max_length=256)] = None
+    nb_visite: Optional[int] = Field(None, ge=0)
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
     start_hour: Optional[constr(max_length=256)] = None

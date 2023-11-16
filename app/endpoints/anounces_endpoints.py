@@ -50,7 +50,7 @@ async def create_anounce(new_anounce_c: anounces_schemas.AnounceCreate, db: Sess
 @router.get("/get_all_actif/", response_model=List[anounces_schemas.AnounceListing])
 async def read_anounces_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    anounces_queries = db.query(models.Anounce).filter(models.Anounce.active == "True", ).offset(skip).limit(limit).all()
+    anounces_queries = db.query(models.Anounce).filter(models.Anounce.active == "True").order_by(models.Anounce.created_at).offset(skip).limit(limit).all()
     
     # pas de anounce
     if not anounces_queries:
@@ -67,13 +67,13 @@ async def read_anounces_actif(skip: int = 0, limit: int = 100, db: Session = Dep
 async def detail_anounce_by_attribute(refnumber: Optional[str] = None, entertainment_site_id: Optional[str] = None, name: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     anounce_query = {} # objet vide
     if refnumber is not None :
-        anounce_query = db.query(models.Anounce).filter(models.Anounce.refnumber == refnumber).offset(skip).limit(limit).all()
+        anounce_query = db.query(models.Anounce).filter(models.Anounce.refnumber == refnumber, models.Anounce.active == "True").order_by(models.Anounce.created_at).offset(skip).limit(limit).all()
     if name is not None :
-        anounce_query = db.query(models.Anounce).filter(models.Anounce.name == name).offset(skip).limit(limit).all()
+        anounce_query = db.query(models.Anounce).filter(models.Anounce.name.contains(name), models.Anounce.active == "True").offset(skip).order_by(models.Anounce.created_at).limit(limit).all()
     if entertainment_site_id is not None :
-        anounce_query = db.query(models.Anounce).filter(models.Anounce.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        anounce_query = db.query(models.Anounce).filter(models.Anounce.entertainment_site_id == entertainment_site_id, models.Anounce.active == "True").order_by(models.Anounce.created_at).offset(skip).limit(limit).all()
     if description is not None:
-        anounce_query = db.query(models.Anounce).filter(models.Anounce.description == description).offset(skip).limit(limit).all()
+        anounce_query = db.query(models.Anounce).filter(models.Anounce.description.contains(description), models.Anounce.active == "True").order_by(models.Anounce.created_at).offset(skip).limit(limit).all()
     
     
     if not anounce_query:
@@ -119,6 +119,8 @@ async def update_anounce(anounce_id: str, anounce_update: anounces_schemas.Anoun
             anounce_query.name = anounce_update.name
         if anounce_update.description:
             anounce_query.description = anounce_update.description
+        if anounce_update.nb_visite:
+            anounce_query.nb_visite = anounce_update.nb_visite
         if anounce_update.entertainment_site_id:
             anounce_query.entertainment_site_id = anounce_update.entertainment_site_id
         
@@ -160,7 +162,7 @@ async def delete_anounce(anounce_id: str,  db: Session = Depends(get_db), curren
 @router.get("/get_all_inactive/", response_model=List[anounces_schemas.AnounceListing])
 async def read_anounces_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),current_user : str = Depends(oauth2.get_current_user)):
     
-    anounces_queries = db.query(models.Anounce).filter(models.Anounce.active == "False", ).offset(skip).limit(limit).all()
+    anounces_queries = db.query(models.Anounce).filter(models.Anounce.active == "False").order_by(models.Anounce.created_at).offset(skip).limit(limit).all()
     
     # pas de anounce
     if not anounces_queries:

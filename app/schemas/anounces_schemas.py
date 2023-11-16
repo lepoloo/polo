@@ -17,6 +17,7 @@ class AnounceCreate(Anounce):
 class AnounceListing(Anounce):
     id: str
     refnumber: str
+    nb_visite: int
     
     class Config:
         from_attributes = True 
@@ -37,4 +38,5 @@ class AnounceUpdate(BaseModel):
     name: Optional[constr(max_length=256)] = None
     entertainment_site_id: Optional[constr(max_length=256)] = None
     description: Optional[constr(max_length=65535)] = None
+    nb_visite: Optional[int] = Field(None, ge=0)
     # active: bool = True

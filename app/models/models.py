@@ -36,7 +36,7 @@ class User(Base):
     # Colonnes étrangères inversées
     entertainment_sites = relationship("EntertainmentSite", back_populates="owner")
     profils = relationship("Profil", back_populates="owner")
-    likes = relationship("Like", back_populates="owner")
+    notes = relationship("Note", back_populates="owner")
     favorites = relationship("Favorite", back_populates="owner")
     
     
@@ -480,7 +480,7 @@ class EntertainmentSite(Base):
     events = relationship("Event", back_populates="entertainment_site")
     profils = relationship("Profil", back_populates="entertainment_site")
     entertainment_site_multimedias = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
-    likes = relationship("Like", back_populates="entertainment_site")
+    notes = relationship("Note", back_populates="entertainment_site")
     favorites = relationship("Favorite", back_populates="entertainment_site")
 
     
@@ -607,9 +607,9 @@ class EntertainmentSiteMultimedia(Base):
     entertainment_site = relationship("EntertainmentSite", back_populates="entertainment_site_multimedias")
     
     
-    ###################### Likes and Favorites #########################  
+    ###################### Note and Favorites #########################  
 
-# Like : doing
+# Note : doing
 class Note(Base):
     __tablename__ = "notes"
 
@@ -618,10 +618,10 @@ class Note(Base):
     note = Column(Double,default=None, nullable=True)
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
-    owner = relationship("User", back_populates="likes")
+    owner = relationship("User", back_populates="notes")
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="likes")
+    entertainment_site = relationship("EntertainmentSite", back_populates="notes")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

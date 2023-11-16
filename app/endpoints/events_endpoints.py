@@ -50,7 +50,7 @@ async def create_event(new_event_c: events_schemas.EventCreate, db: Session = De
 @router.get("/get_all_actif/", response_model=List[events_schemas.EventListing])
 async def read_events_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    events_queries = db.query(models.Event).filter(models.Event.active == "True", ).offset(skip).limit(limit).all()
+    events_queries = db.query(models.Event).filter(models.Event.active == "True").order_by(models.Event.name).offset(skip).limit(limit).all()
     
     # pas de event
     if not events_queries:
@@ -82,23 +82,23 @@ async def detail_event(event_id: str, db: Session = Depends(get_db)):
 async def detail_event_by_attribute(refnumber: Optional[str] = None, name: Optional[str] = None, description: Optional[str] = None, start_date: Optional[datetime] = None,end_date: Optional[datetime] = None,start_hour: Optional[str] = None,end_hour: Optional[str] = None,entertainment_site_id: Optional[str] = None, label_event_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     event_query = {} # objet vide
     if refnumber is not None :
-        event_query = db.query(models.Event).filter(models.Event.refnumber == refnumber).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.refnumber == refnumber).order_by(models.Event.name).offset(skip).limit(limit).all()
     if name is not None :
-        event_query = db.query(models.Event).filter(models.Event.name == name).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.name.contains(name)).order_by(models.Event.name).offset(skip).limit(limit).all()
     if description is not None :
-        event_query = db.query(models.Event).filter(models.Event.description == description).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.description.contains(description)).order_by(models.Event.name).offset(skip).limit(limit).all()
     if start_date is not None :
-        event_query = db.query(models.Event).filter(models.Event.start_date == start_date).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.start_date == start_date).order_by(models.Event.name).offset(skip).limit(limit).all()
     if end_date is not None :
-        event_query = db.query(models.Event).filter(models.Event.end_date == end_date).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.end_date == end_date).order_by(models.Event.name).offset(skip).limit(limit).all()
     if start_hour is not None :
-        event_query = db.query(models.Event).filter(models.Event.start_hour == start_hour).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.start_hour == start_hour).order_by(models.Event.name).offset(skip).limit(limit).all()
     if end_hour is not None :
-        event_query = db.query(models.Event).filter(models.Event.end_hour == end_hour).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.end_hour == end_hour).order_by(models.Event.name).offset(skip).limit(limit).all()
     if entertainment_site_id is not None :
-        event_query = db.query(models.Event).filter(models.Event.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.entertainment_site_id == entertainment_site_id).order_by(models.Event.name).offset(skip).limit(limit).all()
     if label_event_id is not None :
-        event_query = db.query(models.Event).filter(models.Event.label_event_id == label_event_id).offset(skip).limit(limit).all()
+        event_query = db.query(models.Event).filter(models.Event.label_event_id == label_event_id).order_by(models.Event.name).offset(skip).limit(limit).all()
     
     
     if not event_query:
@@ -128,8 +128,8 @@ async def update_event(event_id: str, event_update: events_schemas.EventUpdate, 
             event_query.label_event_id = event_update.label_event_id
         if event_update.entertainment_site_id:
             event_query.entertainment_site_id = event_update.entertainment_site_id
-        if event_update.status:
-            event_query.status = event_update.status
+        if event_update.nb_visite:
+            event_query.nb_visite = event_update.nb_visite
         if event_update.start_date:
             event_query.start_date = event_update.start_date
         if event_update.end_date:
@@ -177,7 +177,7 @@ async def delete_event(event_id: str,  db: Session = Depends(get_db), current_us
 @router.get("/get_all_inactive/", response_model=List[events_schemas.EventListing])
 async def read_events_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    events_queries = db.query(models.Event).filter(models.Event.active == "False", ).offset(skip).limit(limit).all()
+    events_queries = db.query(models.Event).filter(models.Event.active == "False").order_by(models.Event.name).offset(skip).limit(limit).all()
     
     # pas de event
     if not events_queries:

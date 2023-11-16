@@ -50,7 +50,7 @@ async def create_quarter(new_quarter_c: quarters_schemas.QuarterCreate, db: Sess
 @router.get("/get_all_actif/", response_model=List[quarters_schemas.QuarterListing])
 async def read_quarters_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    quarters_queries = db.query(models.Quarter).filter(models.Quarter.active == "True", ).offset(skip).limit(limit).all()
+    quarters_queries = db.query(models.Quarter).filter(models.Quarter.active == "True").order_by(models.Quarter.name).offset(skip).limit(limit).all()
     
     # pas de quarter
     if not quarters_queries:
@@ -67,11 +67,11 @@ async def read_quarters_actif(skip: int = 0, limit: int = 100, db: Session = Dep
 async def detail_quarter_by_attribute(refnumber: Optional[str] = None, town_id: Optional[str] = None, name: Optional[str] = None, description: Optional[str] = None, price: Optional[float] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     quarter_query = {} # objet vide
     if refnumber is not None :
-        quarter_query = db.query(models.Quarter).filter(models.Quarter.refnumber == refnumber).offset(skip).limit(limit).all()
+        quarter_query = db.query(models.Quarter).filter(models.Quarter.refnumber == refnumber, models.Quarter.active == "True").order_by(models.Quarter.name).offset(skip).limit(limit).all()
     if name is not None :
-        quarter_query = db.query(models.Quarter).filter(models.Quarter.name == name).offset(skip).limit(limit).all()
+        quarter_query = db.query(models.Quarter).filter(models.Quarter.name.contains(name), models.Quarter.active == "True").order_by(models.Quarter.name).offset(skip).limit(limit).all()
     if town_id is not None :
-        quarter_query = db.query(models.Quarter).filter(models.Quarter.town_id == town_id).offset(skip).limit(limit).all()
+        quarter_query = db.query(models.Quarter).filter(models.Quarter.town_id == town_id, models.Quarter.active == "True").order_by(models.Quarter.name).offset(skip).limit(limit).all()
     
     
     if not quarter_query:
@@ -146,7 +146,7 @@ async def delete_quarter(quarter_id: str,  db: Session = Depends(get_db), curren
 @router.get("/get_all_inactive/", response_model=List[quarters_schemas.QuarterListing])
 async def read_quarters_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    quarters_queries = db.query(models.Quarter).filter(models.Quarter.active == "False", ).offset(skip).limit(limit).all()
+    quarters_queries = db.query(models.Quarter).filter(models.Quarter.active == "False", ).order_by(models.Quarter.name).offset(skip).limit(limit).all()
     
     # pas de quarter
     if not quarters_queries:

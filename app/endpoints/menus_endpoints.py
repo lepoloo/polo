@@ -50,7 +50,7 @@ async def create_menu(new_menu_c: menus_schemas.MenuCreate, db: Session = Depend
 @router.get("/get_all_actif/", response_model=List[menus_schemas.MenuListing])
 async def read_menus_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    menus_queries = db.query(models.Menu).filter(models.Menu.active == "True", ).offset(skip).limit(limit).all()
+    menus_queries = db.query(models.Menu).filter(models.Menu.active == "True").order_by(models.Menu.card_id).offset(skip).limit(limit).all()
     
     # pas de menu
     if not menus_queries:
@@ -73,13 +73,13 @@ async def detail_menu(menu_id: str, db: Session = Depends(get_db)):
 async def detail_menu_by_attribute(refnumber: Optional[str] = None, product_id: Optional[str] = None, card_id: Optional[str] = None, price: Optional[float] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     menu_query = {} # objet vide
     if refnumber is not None :
-        menu_query = db.query(models.Menu).filter(models.Menu.refnumber == refnumber).offset(skip).limit(limit).all()
+        menu_query = db.query(models.Menu).filter(models.Menu.refnumber == refnumber).order_by(models.Menu.card_id).offset(skip).limit(limit).all()
     if card_id is not None :
-        menu_query = db.query(models.Menu).filter(models.Menu.card_id == card_id).offset(skip).limit(limit).all()
+        menu_query = db.query(models.Menu).filter(models.Menu.card_id == card_id).order_by(models.Menu.card_id).offset(skip).limit(limit).all()
     if product_id is not None :
-        menu_query = db.query(models.Menu).filter(models.Menu.product_id == product_id).offset(skip).limit(limit).all()
+        menu_query = db.query(models.Menu).filter(models.Menu.product_id == product_id).order_by(models.Menu.card_id).offset(skip).limit(limit).all()
     if price is not None :
-        menu_query = db.query(models.Menu).filter(models.Menu.price == price).offset(skip).limit(limit).all()
+        menu_query = db.query(models.Menu).filter(models.Menu.price == price).order_by(models.Menu.card_id).offset(skip).limit(limit).all()
     
     
     if not menu_query:
@@ -146,7 +146,7 @@ async def delete_menu(menu_id: str,  db: Session = Depends(get_db), current_user
 @router.get("/get_all_inactive/", response_model=List[menus_schemas.MenuListing])
 async def read_menus_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    menus_queries = db.query(models.Menu).filter(models.Menu.active == "False", ).offset(skip).limit(limit).all()
+    menus_queries = db.query(models.Menu).filter(models.Menu.active == "False").order_by(models.Menu.card_id).offset(skip).limit(limit).all()
     
     # pas de menu
     if not menus_queries:

@@ -30,11 +30,11 @@ async def create_profil_privilege(new_profil_privilege_c: profil_privileges_sche
     NUM_REF = 10001
     codefin = datetime.now().strftime("%m/%Y")
     concatenated_num_ref = str(
-            NUM_REF + len(db.query(models.ProfilRole).filter(models.ProfilRole.refnumber.endswith(codefin)).all())) + "/" + codefin
+            NUM_REF + len(db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.refnumber.endswith(codefin)).all())) + "/" + codefin
     
     author = current_user.id
     
-    new_profil_privilege= models.ProfilRole(id = concatenated_uuid, **new_profil_privilege_c.dict(), refnumber = concatenated_num_ref, created_by = author)
+    new_profil_privilege= models.ProfilPrivilege(id = concatenated_uuid, **new_profil_privilege_c.dict(), refnumber = concatenated_num_ref, created_by = author)
     
     try:
         db.add(new_profil_privilege )# pour ajouter une tuple
@@ -50,7 +50,7 @@ async def create_profil_privilege(new_profil_privilege_c: profil_privileges_sche
 @router.get("/get_all_actif/", response_model=List[profil_privileges_schemas.ProfilPrivilegeListing])
 async def read_profil_privileges_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    profil_privileges_queries = db.query(models.ProfilRole).filter(models.ProfilRole.active == "True", ).offset(skip).limit(limit).all()
+    profil_privileges_queries = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.active == "True").order_by(models.ProfilPrivilege.created_at).offset(skip).limit(limit).all()
     
     # pas de profil_privilege
     if not profil_privileges_queries:
@@ -62,7 +62,7 @@ async def read_profil_privileges_actif(skip: int = 0, limit: int = 100, db: Sess
 # Get an profil_privilege
 @router.get("/get/{profil_privilege_id}", status_code=status.HTTP_200_OK, response_model=profil_privileges_schemas.ProfilPrivilegeDetail)
 async def detail_profil_privilege(profil_privilege_id: str, db: Session = Depends(get_db)):
-    profil_privilege_query = db.query(models.ProfilRole).filter(models.ProfilRole.id == profil_privilege_id).first()
+    profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.id == profil_privilege_id).first()
     if not profil_privilege_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"profil_privilege with id: {profil_privilege_id} does not exist")
     return jsonable_encoder(profil_privilege_query)
@@ -73,11 +73,11 @@ async def detail_profil_privilege(profil_privilege_id: str, db: Session = Depend
 async def detail_profil_privilege_by_attribute(refnumber: Optional[str] = None, profil_id: Optional[str] = None, privilege_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     profil_privilege_query = {} # objet vide
     if refnumber is not None :
-        profil_privilege_query = db.query(models.ProfilRole).filter(models.ProfilRole.refnumber == refnumber).offset(skip).limit(limit).all()
+        profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.refnumber == refnumber, models.ProfilPrivilege.active == "True").order_by(models.ProfilPrivilege.created_at).offset(skip).limit(limit).all()
     if profil_id is not None :
-        profil_privilege_query = db.query(models.ProfilRole).filter(models.ProfilRole.profil_id == profil_id).offset(skip).limit(limit).all()
+        profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.profil_id == profil_id, models.ProfilPrivilege.active == "True").order_by(models.ProfilPrivilege.created_at).offset(skip).limit(limit).all()
     if privilege_id is not None :
-        profil_privilege_query = db.query(models.ProfilRole).filter(models.ProfilRole.privilege_id == privilege_id).offset(skip).limit(limit).all()
+        profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.privilege_id == privilege_id, models.ProfilPrivilege.active == "True").order_by(models.ProfilPrivilege.created_at).offset(skip).limit(limit).all()
     
     
     if not profil_privilege_query:
@@ -90,7 +90,7 @@ async def detail_profil_privilege_by_attribute(refnumber: Optional[str] = None, 
 @router.put("/update/{profil_privilege_id}", status_code = status.HTTP_205_RESET_CONTENT, response_model = profil_privileges_schemas.ProfilPrivilegeDetail)
 async def update_profil_privilege(profil_privilege_id: str, profil_privilege_update: profil_privileges_schemas.ProfilPrivilegeUpdate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
         
-    profil_privilege_query = db.query(models.ProfilRole).filter(models.ProfilRole.id == profil_privilege_id, models.ProfilRole.active == "True").first()
+    profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.id == profil_privilege_id, models.ProfilPrivilege.active == "True").first()
 
     if not profil_privilege_query:
             
@@ -118,7 +118,7 @@ async def update_profil_privilege(profil_privilege_id: str, profil_privilege_upd
 @router.patch("/delete/{profil_privilege_id}", status_code = status.HTTP_204_NO_CONTENT)
 async def delete_profil_privilege(profil_privilege_id: str,  db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    profil_privilege_query = db.query(models.ProfilRole).filter(models.ProfilRole.id == profil_privilege_id, models.ProfilRole.active == "True").first()
+    profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.id == profil_privilege_id, models.ProfilPrivilege.active == "True").first()
     
     if not profil_privilege_query:    
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"profil_privilege with id: {profil_privilege_id} does not exist")
@@ -140,7 +140,7 @@ async def delete_profil_privilege(profil_privilege_id: str,  db: Session = Depen
 @router.get("/get_all_inactive/", response_model=List[profil_privileges_schemas.ProfilPrivilegeListing])
 async def read_profil_privileges_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    profil_privileges_queries = db.query(models.ProfilRole).filter(models.ProfilRole.active == "False", ).offset(skip).limit(limit).all()
+    profil_privileges_queries = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.active == "False").order_by(models.ProfilPrivilege.created_at).offset(skip).limit(limit).all()
     
     # pas de profil_privilege
     if not profil_privileges_queries:
@@ -153,7 +153,7 @@ async def read_profil_privileges_inactive(skip: int = 0, limit: int = 100, db: S
 @router.patch("/restore/{profil_privilege_id}", status_code = status.HTTP_200_OK,response_model = profil_privileges_schemas.ProfilPrivilegeListing)
 async def restore_profil_privilege(profil_privilege_id: str,  db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    profil_privilege_query = db.query(models.ProfilRole).filter(models.ProfilRole.id == profil_privilege_id, models.ProfilRole.active == "False").first()
+    profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.id == profil_privilege_id, models.ProfilPrivilege.active == "False").first()
     
     if not profil_privilege_query:  
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"profil_privilege with id: {profil_privilege_id} does not exist")

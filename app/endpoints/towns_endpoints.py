@@ -50,9 +50,9 @@ async def create_town(new_town_c: towns_schemas.TownCreate, db: Session = Depend
 @router.get("/get_all_actif/", response_model=List[towns_schemas.TownListing])
 async def read_towns_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    # towns_queries = db.query(models.Town).filter(models.Town.active == "True" ).offset(skip).limit(limit).all()
+    # towns_queries = db.query(models.Town).filter(models.Town.active == "True" ).order_by(models.Town.name).offset(skip).limit(limit).all()
     # Récupérez les villes du pays
-    towns_queries = db.query(models.Town).filter(models.Town.active == "True").join(models.Country).filter(models.Country.id == models.Town.country_id).group_by(models.Town.id).limit(limit).offset(skip).all()
+    towns_queries = db.query(models.Town).filter(models.Town.active == "True").order_by(models.Town.name).join(models.Country).filter(models.Country.id == models.Town.country_id).group_by(models.Town.id).limit(limit).offset(skip).all()
     
     # pas de town
     if not towns_queries:
@@ -69,11 +69,11 @@ async def read_towns_actif(skip: int = 0, limit: int = 100, db: Session = Depend
 async def detail_town_by_attribute(refnumber: Optional[str] = None, country_id: Optional[str] = None, name: Optional[str] = None, description: Optional[str] = None, price: Optional[float] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     town_query = {} # objet vide
     if refnumber is not None :
-        town_query = db.query(models.Town).filter(models.Town.refnumber == refnumber).offset(skip).limit(limit).all()
+        town_query = db.query(models.Town).filter(models.Town.refnumber == refnumber, models.Town.active == "True").order_by(models.Town.name).offset(skip).limit(limit).all()
     if name is not None :
-        town_query = db.query(models.Town).filter(models.Town.name == name).offset(skip).limit(limit).all()
+        town_query = db.query(models.Town).filter(models.Town.name.contains(name), models.Town.active == "True").order_by(models.Town.name).offset(skip).limit(limit).all()
     if country_id is not None :
-        town_query = db.query(models.Town).filter(models.Town.country_id == country_id).offset(skip).limit(limit).all()
+        town_query = db.query(models.Town).filter(models.Town.country_id == country_id, models.Town.active == "True").order_by(models.Town.name).offset(skip).limit(limit).all()
     
     
     if not town_query:
@@ -148,7 +148,7 @@ async def delete_town(town_id: str,  db: Session = Depends(get_db), current_user
 @router.get("/get_all_inactive/", response_model=List[towns_schemas.TownListing])
 async def read_towns_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    towns_queries = db.query(models.Town).filter(models.Town.active == "False", ).offset(skip).limit(limit).all()
+    towns_queries = db.query(models.Town).filter(models.Town.active == "False").order_by(models.Town.name).offset(skip).limit(limit).all()
     
     # pas de town
     if not towns_queries:

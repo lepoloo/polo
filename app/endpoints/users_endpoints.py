@@ -64,7 +64,7 @@ async def create_user(new_user_c: users_schemas.UserCreate, db: Session = Depend
 @router.get("/get_all_actif/", response_model=List[users_schemas.UserListing])
 async def read_users_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    users_queries = db.query(models.User).filter(models.User.active == "True", ).offset(skip).limit(limit).all()
+    users_queries = db.query(models.User).filter(models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     print(users_queries)
     
     # pas de user
@@ -82,21 +82,21 @@ async def read_users_actif(skip: int = 0, limit: int = 100, db: Session = Depend
 async def detail_user_by_attribut(refnumber: Optional[str] = None, phone: Optional[str] = None, name: Optional[str] = None, surname: Optional[str] = None, email: Optional[str] = None, username: Optional[str] = None,is_owner: Optional[bool] = None ,is_staff: Optional[bool] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     user_query = {} # objet vide
     if refnumber is not None :
-        user_query = db.query(models.User).filter(models.User.refnumber == refnumber).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.refnumber == refnumber, models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     if name is not None :
-        user_query = db.query(models.User).filter(models.User.name == name).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.name.contains(name), models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     if surname is not None :
-        user_query = db.query(models.User).filter(models.User.surname == surname).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.surname.contains(surname), models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     if phone is not None :
-        user_query = db.query(models.User).filter(models.User.phone == phone).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.phone.contains(phone), models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     if email is not None:
-        user_query = db.query(models.User).filter(models.User.email == email).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.email.contains(email), models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     if username is not None :
-        user_query = db.query(models.User).filter(models.User.username == username).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.username.contains(username), models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     if is_staff is not None :
-        user_query = db.query(models.User).filter(models.User.is_staff == is_staff).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.is_staff == is_staff, models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     if is_owner is not None :
-        user_query = db.query(models.User).filter(models.User.is_owner == is_owner).offset(skip).limit(limit).all()
+        user_query = db.query(models.User).filter(models.User.is_owner == is_owner, models.User.active == "True").order_by(models.User.name).offset(skip).limit(limit).all()
     
     print(user_query)
     if not user_query:
@@ -190,7 +190,7 @@ async def delete_user(user_id: str,  db: Session = Depends(get_db),current_user 
 @router.get("/get_all_inactive/", response_model=List[users_schemas.UserListing])
 async def read_users_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    users_queries = db.query(models.User).filter(models.User.active == "False", ).offset(skip).limit(limit).all()
+    users_queries = db.query(models.User).filter(models.User.active == "False").order_by(models.User.name).offset(skip).limit(limit).all()
     
     # pas de user
     if not users_queries:

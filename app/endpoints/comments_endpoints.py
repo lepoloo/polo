@@ -50,7 +50,7 @@ async def create_comment(new_comment_c: comments_schemas.CommentCreate, db: Sess
 @router.get("/get_all_actif/", response_model=List[comments_schemas.CommentListing])
 async def read_comments_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    comments_queries = db.query(models.Comment).filter(models.Comment.active == "True", ).offset(skip).limit(limit).all()
+    comments_queries = db.query(models.Comment).filter(models.Comment.active == "True").order_by(models.Comment.created_at).offset(skip).limit(limit).all()
     
     # pas de comment
     if not comments_queries:
@@ -67,13 +67,13 @@ async def read_comments_actif(skip: int = 0, limit: int = 100, db: Session = Dep
 async def detail_comment_by_attribute(refnumber: Optional[str] = None, entertainment_site_id: Optional[str] = None, note: Optional[str] = None, content: Optional[str] = None, nb_personne: Optional[int] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     comment_query = {} # objet vide
     if refnumber is not None :
-        comment_query = db.query(models.Comment).filter(models.Comment.refnumber == refnumber).offset(skip).limit(limit).all()
+        comment_query = db.query(models.Comment).filter(models.Comment.refnumber == refnumber, models.Comment.active == "True").order_by(models.Comment.created_at).offset(skip).limit(limit).all()
     if note is not None :
-        comment_query = db.query(models.Comment).filter(models.Comment.note == note).offset(skip).limit(limit).all()
+        comment_query = db.query(models.Comment).filter(models.Comment.note == note, models.Comment.active == "True").order_by(models.Comment.created_at).offset(skip).limit(limit).all()
     if entertainment_site_id is not None :
-        comment_query = db.query(models.Comment).filter(models.Comment.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        comment_query = db.query(models.Comment).filter(models.Comment.entertainment_site_id == entertainment_site_id, models.Comment.active == "True").order_by(models.Comment.created_at).offset(skip).limit(limit).all()
     if content is not None:
-        comment_query = db.query(models.Comment).filter(models.Comment.content == content).offset(skip).limit(limit).all()
+        comment_query = db.query(models.Comment).filter(models.Comment.content.contains(content), models.Comment.active == "True").order_by(models.Comment.created_at).offset(skip).limit(limit).all()
     
     
     
@@ -151,7 +151,7 @@ async def delete_comment(comment_id: str,  db: Session = Depends(get_db), curren
 @router.get("/get_all_inactive/", response_model=List[comments_schemas.CommentListing])
 async def read_comments_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),current_user : str = Depends(oauth2.get_current_user)):
     
-    comments_queries = db.query(models.Comment).filter(models.Comment.active == "False", ).offset(skip).limit(limit).all()
+    comments_queries = db.query(models.Comment).filter(models.Comment.active == "False", ).order_by(models.Comment.created_at).offset(skip).limit(limit).all()
     
     # pas de comment
     if not comments_queries:

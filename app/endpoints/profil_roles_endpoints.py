@@ -50,7 +50,7 @@ async def create_profil_role(new_profil_role_c: profil_roles_schemas.ProfilRoleC
 @router.get("/get_all_actif/", response_model=List[profil_roles_schemas.ProfilRoleListing])
 async def read_profil_roles_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    profil_roles_queries = db.query(models.ProfilRole).filter(models.ProfilRole.active == "True", ).offset(skip).limit(limit).all()
+    profil_roles_queries = db.query(models.ProfilRole).filter(models.ProfilRole.active == "True").order_by(models.ProfilRole.created_at).offset(skip).limit(limit).all()
     
     # pas de profil_role
     if not profil_roles_queries:
@@ -73,11 +73,11 @@ async def detail_profil_role(profil_role_id: str, db: Session = Depends(get_db))
 async def detail_profil_role_by_attribute(refnumber: Optional[str] = None, profil_id: Optional[str] = None, role_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     profil_role_query = {} # objet vide
     if refnumber is not None :
-        profil_role_query = db.query(models.ProfilRole).filter(models.ProfilRole.refnumber == refnumber).offset(skip).limit(limit).all()
+        profil_role_query = db.query(models.ProfilRole).filter(models.ProfilRole.refnumber == refnumber, models.ProfilRole.active == "True").order_by(models.ProfilRole.created_at).offset(skip).limit(limit).all()
     if profil_id is not None :
-        profil_role_query = db.query(models.ProfilRole).filter(models.ProfilRole.profil_id == profil_id).offset(skip).limit(limit).all()
+        profil_role_query = db.query(models.ProfilRole).filter(models.ProfilRole.profil_id == profil_id, models.ProfilRole.active == "True").order_by(models.ProfilRole.created_at).offset(skip).limit(limit).all()
     if role_id is not None :
-        profil_role_query = db.query(models.ProfilRole).filter(models.ProfilRole.role_id == role_id).offset(skip).limit(limit).all()
+        profil_role_query = db.query(models.ProfilRole).filter(models.ProfilRole.role_id == role_id, models.ProfilRole.active == "True").order_by(models.ProfilRole.created_at).offset(skip).limit(limit).all()
     
     
     if not profil_role_query:
@@ -141,7 +141,7 @@ async def delete_profil_role(profil_role_id: str,  db: Session = Depends(get_db)
 @router.get("/get_all_inactive/", response_model=List[profil_roles_schemas.ProfilRoleListing])
 async def read_profil_roles_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    profil_roles_queries = db.query(models.ProfilRole).filter(models.ProfilRole.active == "False", ).offset(skip).limit(limit).all()
+    profil_roles_queries = db.query(models.ProfilRole).filter(models.ProfilRole.active == "False").order_by(models.ProfilRole.created_at).offset(skip).limit(limit).all()
     
     # pas de profil_role
     if not profil_roles_queries:

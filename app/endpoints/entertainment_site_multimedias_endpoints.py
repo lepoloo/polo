@@ -50,7 +50,7 @@ async def create_entertainment_site_multimedia(new_entertainment_site_multimedia
 @router.get("/get_all_actif/", response_model=List[entertainment_site_multimedias_schemas.EntertainmentSiteMultimediaListing])
 async def read_entertainment_site_multimedias_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    entertainment_site_multimedias_queries = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.active == "True", ).offset(skip).limit(limit).all()
+    entertainment_site_multimedias_queries = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.active == "True").order_by(models.EntertainmentSiteMultimedia.created_at).offset(skip).limit(limit).all()
     
     # pas de entertainment_site_multimedia
     if not entertainment_site_multimedias_queries:
@@ -73,11 +73,11 @@ async def detail_entertainment_site_multimedia(entertainment_site_multimedia_id:
 async def detail_entertainment_site_multimedia_by_attribute(refnumber: Optional[str] = None, link_media: Optional[str] = None, entertainment_site_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     entertainment_site_multimedia_query = {} # objet vide
     if refnumber is not None :
-        entertainment_site_multimedia_query = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.refnumber == refnumber).offset(skip).limit(limit).all()
+        entertainment_site_multimedia_query = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.refnumber == refnumber, models.EntertainmentSiteMultimedia.active == "True").order_by(models.EntertainmentSiteMultimedia.created_at).offset(skip).limit(limit).all()
     if link_media is not None :
-        entertainment_site_multimedia_query = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.link_media == link_media).offset(skip).limit(limit).all()
+        entertainment_site_multimedia_query = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.link_media.contains(link_media), models.EntertainmentSiteMultimedia.active == "True").order_by(models.EntertainmentSiteMultimedia.created_at).offset(skip).limit(limit).all()
     if entertainment_site_id is not None :
-        entertainment_site_multimedia_query = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        entertainment_site_multimedia_query = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.entertainment_site_id == entertainment_site_id, models.EntertainmentSiteMultimedia.active == "True").order_by(models.EntertainmentSiteMultimedia.created_at).offset(skip).limit(limit).all()
     
     
     if not entertainment_site_multimedia_query:
@@ -142,7 +142,7 @@ async def delete_entertainment_site_multimedia(entertainment_site_multimedia_id:
 @router.get("/get_all_inactive/", response_model=List[entertainment_site_multimedias_schemas.EntertainmentSiteMultimediaListing])
 async def read_entertainment_site_multimedias_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    entertainment_site_multimedias_queries = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.active == "False", ).offset(skip).limit(limit).all()
+    entertainment_site_multimedias_queries = db.query(models.EntertainmentSiteMultimedia).filter(models.EntertainmentSiteMultimedia.active == "False").order_by(models.EntertainmentSiteMultimedia.created_at).offset(skip).limit(limit).all()
     
     # pas de entertainment_site_multimedia
     if not entertainment_site_multimedias_queries:

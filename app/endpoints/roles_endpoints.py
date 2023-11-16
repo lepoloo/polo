@@ -50,7 +50,7 @@ async def create_role(new_role_c: roles_schemas.RoleCreate, db: Session = Depend
 @router.get("/get_all_actif/", response_model=List[roles_schemas.RoleListing])
 async def read_role_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    roles_queries = db.query(models.Role).filter(models.Role.active == "True", ).offset(skip).limit(limit).all()
+    roles_queries = db.query(models.Role).filter(models.Role.active == "True").order_by(models.Role.name).offset(skip).limit(limit).all()
     
     # pas de role
     if not roles_queries:
@@ -77,9 +77,9 @@ async def detail_role(role_id: str, db: Session = Depends(get_db)):
 async def detail_role_by_attribute(name: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     role_query = {} # objet vide
     if name is not None :
-        role_query = db.query(models.Role).filter(models.Role.name == name).offset(skip).limit(limit).all()
+        role_query = db.query(models.Role).filter(models.Role.name.contains(name), models.Role.active == "True").order_by(models.Role.name).offset(skip).limit(limit).all()
     if description is not None :
-        role_query = db.query(models.Role).filter(models.Role.description == description).offset(skip).limit(limit).all()
+        role_query = db.query(models.Role).filter(models.Role.description.contains(description), models.Role.active == "True").order_by(models.Role.name).offset(skip).limit(limit).all()
        
     
     if not role_query:
@@ -143,7 +143,7 @@ async def delete_role(role_id: str,  db: Session = Depends(get_db), current_user
 @router.get("/get_all_inactive/", response_model=List[roles_schemas.RoleListing])
 async def read_roles_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    roles_queries = db.query(models.Role).filter(models.Role.active == "False", ).offset(skip).limit(limit).all()
+    roles_queries = db.query(models.Role).filter(models.Role.active == "False").order_by(models.Role.name).offset(skip).limit(limit).all()
     
     # pas de role
     if not roles_queries:

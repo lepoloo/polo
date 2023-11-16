@@ -50,7 +50,7 @@ async def create_profil(new_profil_c: profils_schemas.ProfilCreate, db: Session 
 @router.get("/get_all_actif/", response_model=List[profils_schemas.ProfilListing])
 async def read_profils_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    profils_queries = db.query(models.Profil).filter(models.Profil.active == "True", ).offset(skip).limit(limit).all()
+    profils_queries = db.query(models.Profil).filter(models.Profil.active == "True").order_by(models.Profil.fucntion).offset(skip).limit(limit).all()
     
     # pas de profil
     if not profils_queries:
@@ -73,15 +73,15 @@ async def detail_profil(profil_id: str, db: Session = Depends(get_db)):
 async def detail_profil_by_attribute(refnumber: Optional[str] = None, fucntion: Optional[str] = None, description: Optional[str] = None, owner_id: Optional[str] = None, entertainment_site_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     profil_query = {} # objet vide
     if refnumber is not None :
-        profil_query = db.query(models.Profil).filter(models.Profil.refnumber == refnumber).offset(skip).limit(limit).all()
+        profil_query = db.query(models.Profil).filter(models.Profil.refnumber == refnumber, models.Profil.active == "True").order_by(models.Profil.fucntion).offset(skip).limit(limit).all()
     if fucntion is not None :
-        profil_query = db.query(models.Profil).filter(models.Profil.fucntion == fucntion).offset(skip).limit(limit).all()
+        profil_query = db.query(models.Profil).filter(models.Profil.fucntion.contains(fucntion), models.Profil.active == "True").order_by(models.Profil.fucntion).offset(skip).limit(limit).all()
     if description is not None :
-        profil_query = db.query(models.Profil).filter(models.Profil.description == description).offset(skip).limit(limit).all()
+        profil_query = db.query(models.Profil).filter(models.Profil.description.contains(description), models.Profil.active == "True").order_by(models.Profil.fucntion).offset(skip).limit(limit).all()
     if owner_id is not None :
-        profil_query = db.query(models.Profil).filter(models.Profil.owner_id == owner_id).offset(skip).limit(limit).all()
+        profil_query = db.query(models.Profil).filter(models.Profil.owner_id == owner_id, models.Profil.active == "True").offset(skip).order_by(models.Profil.fucntion).limit(limit).all()
     if entertainment_site_id is not None :
-        profil_query = db.query(models.Profil).filter(models.Profil.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        profil_query = db.query(models.Profil).filter(models.Profil.entertainment_site_id == entertainment_site_id, models.Profil.active == "True").order_by(models.Profil.fucntion).offset(skip).limit(limit).all()
     
     
     if not profil_query:
@@ -151,7 +151,7 @@ async def delete_profil(profil_id: str,  db: Session = Depends(get_db), current_
 @router.get("/get_all_inactive/", response_model=List[profils_schemas.ProfilListing])
 async def read_profils_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    profils_queries = db.query(models.Profil).filter(models.Profil.active == "False", ).offset(skip).limit(limit).all()
+    profils_queries = db.query(models.Profil).filter(models.Profil.active == "False").order_by(models.Profil.fucntion).offset(skip).limit(limit).all()
     
     # pas de profil
     if not profils_queries:

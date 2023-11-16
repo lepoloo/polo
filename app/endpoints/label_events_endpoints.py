@@ -51,7 +51,7 @@ async def create_label_event(new_label_event_c: label_events_schemas.LabelEventC
 @router.get("/get_all_actif/", response_model=List[label_events_schemas.LabelEventListing])
 async def read_label_event_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    label_events_queries = db.query(models.LabelEvent).filter(models.LabelEvent.active == "True", ).offset(skip).limit(limit).all()
+    label_events_queries = db.query(models.LabelEvent).filter(models.LabelEvent.active == "True").order_by(models.LabelEvent.name).offset(skip).limit(limit).all()
     
     # pas de label_event
     if not label_events_queries:
@@ -78,9 +78,9 @@ async def detail_label_event(label_event_id: str, db: Session = Depends(get_db))
 async def detail_label_event_by_attribute(name: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     label_event_query = {} # objet vide
     if name is not None :
-        label_event_query = db.query(models.LabelEvent).filter(models.LabelEvent.name == name).offset(skip).limit(limit).all()
+        label_event_query = db.query(models.LabelEvent).filter(models.LabelEvent.name.contains(name), models.LabelEvent.active == "True").order_by(models.LabelEvent.name).offset(skip).limit(limit).all()
     if description is not None :
-        label_event_query = db.query(models.LabelEvent).filter(models.LabelEvent.description == description).offset(skip).limit(limit).all()
+        label_event_query = db.query(models.LabelEvent).filter(models.LabelEvent.description.contains(description), models.LabelEvent.active == "True").order_by(models.LabelEvent.name).offset(skip).limit(limit).all()
        
     
     if not label_event_query:
@@ -144,7 +144,7 @@ async def delete_label_event(label_event_id: str,  db: Session = Depends(get_db)
 @router.get("/get_all_inactive/", response_model=List[label_events_schemas.LabelEventListing])
 async def read_label_events_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    label_events_queries = db.query(models.LabelEvent).filter(models.LabelEvent.active == "False", ).offset(skip).limit(limit).all()
+    label_events_queries = db.query(models.LabelEvent).filter(models.LabelEvent.active == "False").order_by(models.LabelEvent.name).offset(skip).limit(limit).all()
     
     # pas de label_event
     if not label_events_queries:

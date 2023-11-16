@@ -50,7 +50,7 @@ async def create_schedule_time(new_schedule_time_c: schedule_times_schemas.Sched
 @router.get("/get_all_actif/", response_model=List[schedule_times_schemas.ScheduleTimeListing])
 async def read_schedule_time_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    schedule_times_queries = db.query(models.ScheduleTime).filter(models.ScheduleTime.active == "True", ).offset(skip).limit(limit).all()
+    schedule_times_queries = db.query(models.ScheduleTime).filter(models.ScheduleTime.active == "True").order_by(models.ScheduleTime.program_id).offset(skip).limit(limit).all()
     
     # pas de schedule_time
     if not schedule_times_queries:
@@ -77,13 +77,13 @@ async def detail_schedule_time(schedule_time_id: str, db: Session = Depends(get_
 async def detail_schedule_time_by_attribute(daily_day: Optional[str] = None, open_hour: Optional[str] = None, close_hour: Optional[str] = None, program_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     schedule_time_query = {} # objet vide
     if daily_day is not None :
-        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.daily_day == daily_day).offset(skip).limit(limit).all()
+        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.daily_day.contains(daily_day), daily_day, models.ScheduleTime.active == "True").order_by(models.ScheduleTime.program_id).offset(skip).limit(limit).all()
     if open_hour is not None :
-        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.open_hour == open_hour).offset(skip).limit(limit).all()
+        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.open_hour == open_hour, models.ScheduleTime.active == "True").order_by(models.ScheduleTime.program_id).offset(skip).limit(limit).all()
     if close_hour is not None :
-        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.close_hour == close_hour).offset(skip).limit(limit).all()
+        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.close_hour == close_hour, models.ScheduleTime.active == "True").order_by(models.ScheduleTime.program_id).offset(skip).limit(limit).all()
     if program_id is not None :
-        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.program_id == program_id).offset(skip).limit(limit).all()
+        schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.program_id == program_id, models.ScheduleTime.active == "True").order_by(models.ScheduleTime.program_id).offset(skip).limit(limit).all()
        
     
     if not schedule_time_query:
@@ -151,7 +151,7 @@ async def delete_schedule_time(schedule_time_id: str,  db: Session = Depends(get
 @router.get("/get_all_inactive/", response_model=List[schedule_times_schemas.ScheduleTimeListing])
 async def read_schedule_times_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    schedule_times_queries = db.query(models.ScheduleTime).filter(models.ScheduleTime.active == "False", ).offset(skip).limit(limit).all()
+    schedule_times_queries = db.query(models.ScheduleTime).filter(models.ScheduleTime.active == "False", ).order_by(models.ScheduleTime.program_id).offset(skip).limit(limit).all()
     
     # pas de schedule_time
     if not schedule_times_queries:

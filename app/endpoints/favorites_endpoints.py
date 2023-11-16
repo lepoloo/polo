@@ -59,7 +59,7 @@ async def create_favorite(new_favorite_c: favorites_schemas.FavoriteCreate, db: 
 @router.get("/get_all_actif/", response_model=List[favorites_schemas.FavoriteListing])
 async def read_favorites_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    favorites_queries = db.query(models.Favorite).filter(models.Favorite.active == "True", ).offset(skip).limit(limit).all()
+    favorites_queries = db.query(models.Favorite).filter(models.Favorite.active == "True").order_by(models.Favorite.created_at).offset(skip).limit(limit).all()
     
     # pas de favorite
     if not favorites_queries:
@@ -76,11 +76,11 @@ async def read_favorites_actif(skip: int = 0, limit: int = 100, db: Session = De
 async def detail_favorite_by_attribute(refnumber: Optional[str] = None, entertainment_site_id: Optional[str] = None, owner_id: Optional[str] = None, description: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     favorite_query = {} # objet vide
     if refnumber is not None :
-        favorite_query = db.query(models.Favorite).filter(models.Favorite.refnumber == refnumber).offset(skip).limit(limit).all()
+        favorite_query = db.query(models.Favorite).filter(models.Favorite.refnumber == refnumber, models.Favorite.active == "True").order_by(models.Favorite.created_at).offset(skip).limit(limit).all()
     if owner_id is not None :
-        favorite_query = db.query(models.Favorite).filter(models.Favorite.owner_id == owner_id).offset(skip).limit(limit).all()
+        favorite_query = db.query(models.Favorite).filter(models.Favorite.owner_id == owner_id, models.Favorite.active == "True").order_by(models.Favorite.created_at).offset(skip).limit(limit).all()
     if entertainment_site_id is not None :
-        favorite_query = db.query(models.Favorite).filter(models.Favorite.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        favorite_query = db.query(models.Favorite).filter(models.Favorite.entertainment_site_id == entertainment_site_id, models.Favorite.active == "True").order_by(models.Favorite.created_at).offset(skip).limit(limit).all()
     
     
     if not favorite_query:

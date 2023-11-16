@@ -50,7 +50,7 @@ async def create_program(new_program_c: programs_schemas.ProgramCreate, db: Sess
 @router.get("/get_all_actif/", response_model=List[programs_schemas.ProgramListing])
 async def read_programs_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    programs_queries = db.query(models.Program).filter(models.Program.active == "True", ).offset(skip).limit(limit).all()
+    programs_queries = db.query(models.Program).filter(models.Program.active == "True").offset(skip).limit(limit).all()
     
     # pas de program
     if not programs_queries:
@@ -67,13 +67,13 @@ async def read_programs_actif(skip: int = 0, limit: int = 100, db: Session = Dep
 async def detail_program_by_attribute(refnumber: Optional[str] = None, entertainment_site_id: Optional[str] = None, name: Optional[str] = None, description: Optional[str] = None, price: Optional[float] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     program_query = {} # objet vide
     if refnumber is not None :
-        program_query = db.query(models.Program).filter(models.Program.refnumber == refnumber).offset(skip).limit(limit).all()
+        program_query = db.query(models.Program).filter(models.Program.refnumber == refnumber, models.Program.active == "True").order_by(models.Program.name).offset(skip).limit(limit).all()
     if name is not None :
-        program_query = db.query(models.Program).filter(models.Program.name == name).offset(skip).limit(limit).all()
+        program_query = db.query(models.Program).filter(models.Program.name.contains(name), models.Program.active == "True").order_by(models.Program.name).offset(skip).limit(limit).all()
     if entertainment_site_id is not None :
-        program_query = db.query(models.Program).filter(models.Program.entertainment_site_id == entertainment_site_id).offset(skip).limit(limit).all()
+        program_query = db.query(models.Program).filter(models.Program.entertainment_site_id == entertainment_site_id, models.Program.active == "True").order_by(models.Program.name).offset(skip).limit(limit).all()
     if description is not None:
-        program_query = db.query(models.Program).filter(models.Program.description == description).offset(skip).limit(limit).all()
+        program_query = db.query(models.Program).filter(models.Program.description.contains(description), models.Program.active == "True").order_by(models.Program.name).offset(skip).limit(limit).all()
     
     
     if not program_query:
@@ -149,7 +149,7 @@ async def delete_program(program_id: str,  db: Session = Depends(get_db), curren
 @router.get("/get_all_inactive/", response_model=List[programs_schemas.ProgramListing])
 async def read_programs_inactive(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
-    programs_queries = db.query(models.Program).filter(models.Program.active == "False", ).offset(skip).limit(limit).all()
+    programs_queries = db.query(models.Program).filter(models.Program.active == "False", ).order_by(models.Program.name).offset(skip).limit(limit).all()
     
     # pas de program
     if not programs_queries:
