@@ -66,7 +66,7 @@ async def detail_event(event_id: str, db: Session = Depends(get_db)):
     if not event_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"event with id: {event_id} does not exist")
     
-    event_query.nb_visite+= 1
+    event_query.nb_visite = event_query.nb_visite + 1
     try:
         db.commit() # pour faire l'enregistrement
         db.refresh(event_query)# pour renvoyer le résultat

@@ -57,19 +57,12 @@ async def create_entertainment_site(new_entertainment_site_c: entertainment_site
 async def read_entertainment_sites_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
     entertainment_sites_queries = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.active == "True").order_by(models.EntertainmentSite.name).offset(skip).limit(limit).all()
-    
+    # print(entertainment_sites_queries.__dict__)
     # pas de entertainment_site
     if not entertainment_sites_queries:
        
         raise HTTPException(status_code=404, detail="entertainment_site not found")
     
-    entertainment_sites_queries.nb_visite+= 1
-    try:
-        db.commit() # pour faire l'enregistrement
-        db.refresh(entertainment_sites_queries)# pour renvoyer le résultat
-    except SQLAlchemyError as e:
-        db.rollback()
-        raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
                        
     return jsonable_encoder(entertainment_sites_queries)
 
@@ -112,6 +105,15 @@ async def detail_entertainment_site(entertainment_site_id: str, db: Session = De
     entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.id == entertainment_site_id).first()
     if not entertainment_site_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Entertainment site  with id: {entertainment_site_id} does not exist")
+    
+    entertainment_site_query.nb_visite = entertainment_site_query.nb_visite + 1
+    try:
+        db.commit() # pour faire l'enregistrement
+        db.refresh(entertainment_site_query)# pour renvoyer le résultat
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
+    
     return jsonable_encoder(entertainment_site_query)
 
 

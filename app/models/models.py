@@ -355,7 +355,27 @@ class CategorySite(Base):
     active = Column(Boolean, default=True)
     
     # Colonnes étrangères inversées
-    entertainment_sites = relationship("EntertainmentSite", back_populates="category_site")
+    category_entertainment_sites = relationship("CategoryEntertainmentSite", back_populates="category_site")
+    
+# Menu : doing    
+class CategoryEntertainmentSite(Base):
+    __tablename__ = "category_entertainment_sites"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    # relationship
+    category_site_id = Column(String, ForeignKey(
+        "category_sites.id", ondelete="CASCADE"), nullable=False)
+    category_site = relationship("CategorySite", back_populates="category_entertainment_sites")
+    
+    entertainment_site_id = Column(String, ForeignKey(
+        "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
+    entertainment_site = relationship("EntertainmentSite", back_populates="category_entertainment_sites")
  
 # Reservation : doing
 class Reservation(Base):
@@ -448,7 +468,7 @@ class EntertainmentSite(Base):
     refnumber = Column(String, unique=True, nullable=False)
     name = Column(String, unique=True, index=True, nullable=False)
     description = Column(String(length=65535), nullable=True)
-    nb_visite = Column(Integer,default=None, nullable=True)
+    nb_visite = Column(Integer, server_default=text("0"))
     address = Column(String, unique=True, nullable=False)
     longitude = Column(String, unique=True, nullable=False)
     latitude = Column(String, unique=True, nullable=False)
@@ -467,9 +487,9 @@ class EntertainmentSite(Base):
         "quarters.id", ondelete="CASCADE"), nullable=False)
     quarter = relationship("Quarter", back_populates="entertainment_sites")
     
-    category_site_id = Column(String, ForeignKey(
-        "category_sites.id", ondelete="CASCADE"), nullable=False)
-    category_site = relationship("CategorySite", back_populates="entertainment_sites")
+    # category_site_id = Column(String, ForeignKey(
+    #     "category_sites.id", ondelete="CASCADE"), nullable=False)
+    # category_site = relationship("CategorySite", back_populates="entertainment_sites")
     
     # Colonnes étrangères inversées countryId
     cards = relationship("Card", back_populates="entertainment_site")
@@ -482,6 +502,7 @@ class EntertainmentSite(Base):
     entertainment_site_multimedias = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
     notes = relationship("Note", back_populates="entertainment_site")
     favorites = relationship("Favorite", back_populates="entertainment_site")
+    category_entertainment_sites = relationship("CategoryEntertainmentSite", back_populates="entertainment_site")
 
     
     ###################### Anounce #########################  
@@ -493,7 +514,7 @@ class Anounce(Base):
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
     name = Column(String, unique=True, nullable=False)
-    nb_visite = Column(Integer,default=None, nullable=True)
+    nb_visite = Column(Integer, server_default=text("0"))
     description = Column(String(length=65535), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
@@ -516,7 +537,7 @@ class Event(Base):
     refnumber = Column(String, unique=True, nullable=False)
     name = Column(String, unique=True, nullable=False)
     description = Column(String(length=65535), nullable=True)
-    nb_visite = Column(Integer,default=None, nullable=True)
+    nb_visite = Column(Integer, server_default=text("0"))
     start_date = Column(DateTime)
     end_date = Column(DateTime)
     start_hour = Column(String, nullable=False)

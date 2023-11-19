@@ -87,7 +87,7 @@ async def detail_anounce(anounce_id: str, db: Session = Depends(get_db)):
     if not anounce_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"anounce with id: {anounce_id} does not exist")
     
-    anounce_query.nb_visite+= 1
+    anounce_query.nb_visite = anounce_query.nb_visite + 1
     try:
         db.commit() # pour faire l'enregistrement
         db.refresh(anounce_query)# pour renvoyer le résultat

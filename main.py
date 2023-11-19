@@ -32,8 +32,10 @@ from app.endpoints.profil_privileges_endpoints import router as profil_privilege
 from app.endpoints.anounce_multimedias_endpoints import router as anounce_multimedias_routers
 from app.endpoints.event_multimedias_endpoints import router as event_multimedias_routers
 from app.endpoints.likes_endpoints import router as likes_routers
+from app.endpoints.category_entertainment_sites_endpoints import router as category_entertainment_sites_routers
 from app.endpoints.favorites_endpoints import router as favorites_routers
 from app.endpoints.entertainment_site_multimedias_endpoints import router as entertainment_site_multimedias_routers
+from app.endpoints.notes_endpoints import router as notes_routers
 
 logging.basicConfig(level=logging.INFO)  # Niveau de journalisation souhaité, par exemple INFO
 
@@ -70,21 +72,23 @@ app.include_router(countries_routers)
 app.include_router(towns_routers)
 app.include_router(quarters_routers)
 
-app.include_router(category_sites_routers)
-app.include_router(reservations_routers)
-app.include_router(comments_routers)
-app.include_router(schedule_times_routers)
-app.include_router(programs_routers)
 app.include_router(entertainment_sites_routers)
 app.include_router(entertainment_site_multimedias_routers)
+app.include_router(category_sites_routers)
+app.include_router(category_entertainment_sites_routers)
+app.include_router(programs_routers)
+app.include_router(schedule_times_routers)
 app.include_router(anounces_routers)
 app.include_router(anounce_multimedias_routers)
 app.include_router(label_events_routers)
 app.include_router(events_routers)
 app.include_router(event_multimedias_routers)
+app.include_router(reservations_routers)
 
-app.include_router(likes_routers)
+app.include_router(notes_routers)
 app.include_router(favorites_routers)
+app.include_router(comments_routers)
+app.include_router(likes_routers)
 
 
 
