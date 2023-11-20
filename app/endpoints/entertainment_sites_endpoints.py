@@ -71,7 +71,7 @@ async def read_entertainment_sites_actif(skip: int = 0, limit: int = 100, db: Se
 # Get an entertainment_site
 # "/get_entertainment_site_impersonal/?refnumber=value_refnumber&phone=valeur_phone&email=valeur_email&entertainment_sitename=valeur_entertainment_sitename" : Retourne `{"param1": "value1", "param2": 42, "param3": null}`.
 @router.get("/get_entertainment_site_by_attribute/", status_code=status.HTTP_200_OK, response_model=List[entertainment_sites_schemas.EntertainmentSiteListing])
-async def detail_entertainment_site_by_attribute(refnumber: Optional[str] = None, nb_visite: Optional[int] = None, name: Optional[str] = None, description: Optional[str] = None, address: Optional[str] = None, longitude: Optional[str] = None, latitude: Optional[str] = None, owner_id: Optional[str] = None, quarter_id: Optional[str] = None, category_site_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def detail_entertainment_site_by_attribute(refnumber: Optional[str] = None, nb_visite: Optional[int] = None, name: Optional[str] = None, description: Optional[str] = None, address: Optional[str] = None, longitude: Optional[str] = None, latitude: Optional[str] = None, owner_id: Optional[str] = None, quarter_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     entertainment_site_query = {} # objet vide
     if refnumber is not None :
         entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.refnumber == refnumber, models.EntertainmentSite.active == "True").order_by(models.EntertainmentSite.name).offset(skip).limit(limit).all()
@@ -91,8 +91,8 @@ async def detail_entertainment_site_by_attribute(refnumber: Optional[str] = None
         entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.owner_id == owner_id, models.EntertainmentSite.active == "True").order_by(models.EntertainmentSite.name).offset(skip).limit(limit).all()
     if quarter_id is not None :
         entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.quarter_id == quarter_id, models.EntertainmentSite.active == "True").order_by(models.EntertainmentSite.name).offset(skip).limit(limit).all()
-    if category_site_id is not None :
-        entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.category_site_id == category_site_id, models.EntertainmentSite.active == "True").order_by(models.EntertainmentSite.name).offset(skip).limit(limit).all()
+    # if category_site_id is not None :
+    #     entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.category_site_id == category_site_id, models.EntertainmentSite.active == "True").order_by(models.EntertainmentSite.name).offset(skip).limit(limit).all()
     
     
     if not entertainment_site_query:
@@ -149,8 +149,8 @@ async def update_entertainment_site(entertainment_site_id: str, entertainment_si
             entertainment_site_query.owner_id = entertainment_site_update.owner_id
         if entertainment_site_update.quarter_id:
             entertainment_site_query.quarter_id = entertainment_site_update.quarter_id
-        if entertainment_site_update.category_site_id:
-            entertainment_site_query.category_site_id = entertainment_site_update.category_site_id
+        # if entertainment_site_update.category_site_id:
+        #     entertainment_site_query.category_site_id = entertainment_site_update.category_site_id
         
     
     try:

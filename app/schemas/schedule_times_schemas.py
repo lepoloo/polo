@@ -2,9 +2,10 @@ from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator
 from datetime import datetime, date
 from enum import Enum
 from typing import Optional
+from app.models.models import WeekdayEnum
 
 class ScheduleTime(BaseModel):
-    daily_day: str
+    daily_day: WeekdayEnum
     open_hour: str
     close_hour: str
     program_id: str

@@ -25,6 +25,12 @@ router = APIRouter(prefix = "/schedule_time", tags=['Schedules Times Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=schedule_times_schemas.ScheduleTimeListing)
 async def create_schedule_time(new_schedule_time_c: schedule_times_schemas.ScheduleTimeCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
+    schedule_time_query = db.query(models.ScheduleTime).filter(models.ScheduleTime.daily_day == new_schedule_time_c.daily_day, models.ScheduleTime.program_id == new_schedule_time_c.program_id).first()
+    
+    if  schedule_time_query:
+        raise HTTPException(status_code=403, detail="This Schedule time also exists!")
+    
+    
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001

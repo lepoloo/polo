@@ -24,6 +24,10 @@ router = APIRouter(prefix = "/category_entertainment_site", tags=['Category Ente
 # create a new category_entertainment_site sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=category_entertainment_sites_schemas.CategoryEntertainmentSiteListing)
 async def create_category_entertainment_site(new_category_entertainment_site_c: category_entertainment_sites_schemas.CategoryEntertainmentSiteCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    category_entertainment_site_query = db.query(models.CategoryEntertainmentSite).filter(models.CategoryEntertainmentSite.entertainment_site_id == new_category_entertainment_site_c.entertainment_site_id, models.CategoryEntertainmentSite.category_site_id == new_category_entertainment_site_c.category_site_id).first()
+    
+    if  category_entertainment_site_query:
+        raise HTTPException(status_code=403, detail="This association also exists!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
@@ -43,6 +47,8 @@ async def create_category_entertainment_site(new_category_entertainment_site_c: 
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=403, detail="Somthing is wrong in the process, pleace try later sorry!")
+    
+        
     
     return jsonable_encoder(new_category_entertainment_site)
 

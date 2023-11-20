@@ -4,6 +4,8 @@ from app.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import enum
+# from sqlalchemy import Column, Enum
+# from enum import Enum, EnumMeta
 
 ######################## User #############################
 class GenderType(enum.Enum):
@@ -440,14 +442,23 @@ class Program(Base):
 
  
 # Program : doing
+class WeekdayEnum(Enum):
+    LUNDI = 'LUNDI'
+    MARDI = 'MARDI'
+    MERCREDI = 'MERCREDI'
+    JEUDI = 'JEUDI'
+    VENDREDI = 'VENDREDI'
+    SAMEDI = 'SAMEDI'
+    DIMANCHE = 'DIMANCHE'
 class ScheduleTime(Base):
     __tablename__ = "schedule_times"
 
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
-    daily_day = Column(String, unique=True, nullable=False)
-    open_hour = Column(String, unique=True, nullable=False)
-    close_hour = Column(String, unique=True, nullable=False)
+    daily_day = Column(Enum(WeekdayEnum))
+    # daily_day = Column(Enum('LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'))
+    open_hour = Column(String, unique=False, nullable=False)
+    close_hour = Column(String, unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

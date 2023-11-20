@@ -10,7 +10,7 @@ class EntertainmentSite(BaseModel):
     longitude: str = Field(..., description="Longitude position information of fite.")
     latitude: str = Field(..., description="Longitude position information of fite.")
     quarter_id: str
-    category_site_id: str
+    # category_site_id: str
     
     
     
@@ -49,6 +49,6 @@ class EntertainmentSiteUpdate(BaseModel):
     latitude: Optional[constr(max_length=256)] = None
     owner_id: Optional[constr(max_length=256)] = None
     quarter_id: Optional[constr(max_length=256)] = None
-    category_site_id: Optional[constr(max_length=256)] = None
+    # category_site_id: Optional[constr(max_length=256)] = None
     
     # active: bool = True
