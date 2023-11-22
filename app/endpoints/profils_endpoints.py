@@ -24,6 +24,9 @@ router = APIRouter(prefix = "/profil", tags=['Profils Requests'])
 # create a new profil sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=profils_schemas.ProfilListing)
 async def create_profil(new_profil_c: profils_schemas.ProfilCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    profil_query = db.query(models.Profil).filter(models.Profil.owner_id == new_profil_c.owner_id, models.Profil.entertainment_site_id == new_profil_c.entertainment_site_id).first()
+    if  profil_query:
+        raise HTTPException(status_code=403, detail="This profil also exists!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date

@@ -24,6 +24,9 @@ router = APIRouter(prefix = "/profil_role", tags=['Profils roles Requests'])
 # create a new profil_role sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=profil_roles_schemas.ProfilRoleListing)
 async def create_profil_role(new_profil_role_c: profil_roles_schemas.ProfilRoleCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    profil_role_query = db.query(models.ProfilRole).filter(models.ProfilRole.profil_id == new_profil_role_c.profil_id, models.ProfilRole.role_id == new_profil_role_c.role_id).first()
+    if  profil_role_query:
+        raise HTTPException(status_code=403, detail="This profile has also this role!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date

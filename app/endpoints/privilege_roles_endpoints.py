@@ -25,6 +25,9 @@ router = APIRouter(prefix = "/privilege_role", tags=['Privileges Roles links Req
 # create a new permission sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=privilege_roles_schemas.PrivilegeRoleListing)
 async def create_privilege_role(new_privilege_role_c: privilege_roles_schemas.PrivilegeRoleCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    privilege_role_query = db.query(models.PrivilegeRole).filter(models.PrivilegeRole.role_id == new_privilege_role_c.role_id, models.PrivilegeRole.privilege_id == new_privilege_role_c.privilege_id).first()
+    if  privilege_role_query:
+        raise HTTPException(status_code=403, detail="This assocition also exists!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date

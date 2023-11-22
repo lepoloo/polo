@@ -24,7 +24,9 @@ router = APIRouter(prefix = "/profil_privilege", tags=['Privileges roles Request
 # create a new profil_privilege sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=profil_privileges_schemas.ProfilPrivilegeListing)
 async def create_profil_privilege(new_profil_privilege_c: profil_privileges_schemas.ProfilPrivilegeCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
-    
+    profil_privilege_query = db.query(models.ProfilPrivilege).filter(models.ProfilPrivilege.profil_id == new_profil_privilege_c.profil_id, models.ProfilPrivilege.privilege_id == new_profil_privilege_c.privilege_id).first()
+    if  profil_privilege_query:
+        raise HTTPException(status_code=403, detail="This profile has also this privilege!")
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001

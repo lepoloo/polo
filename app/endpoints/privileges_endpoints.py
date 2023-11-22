@@ -25,6 +25,10 @@ router = APIRouter(prefix = "/privilege", tags=['Privileges Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=privileges_schemas.PrivilegeListing)
 async def create_privilege(new_privilege_c: privileges_schemas.PrivilegeCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
+    privilege_query = db.query(models.Privilege).filter(models.Privilege.name == new_privilege_c.name).first()
+    if  privilege_query:
+        raise HTTPException(status_code=403, detail="This privilege also exists!")
+    
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001

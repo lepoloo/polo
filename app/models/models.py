@@ -113,7 +113,7 @@ class Profil(Base):
     owner = relationship("User", back_populates="profils")
     
     
-    entertainment_sites_id = Column(String, ForeignKey(
+    entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
     entertainment_site = relationship("EntertainmentSite", back_populates="profils")
     
@@ -442,21 +442,23 @@ class Program(Base):
 
  
 # Program : doing
-class WeekdayEnum(Enum):
-    LUNDI = 'LUNDI'
-    MARDI = 'MARDI'
-    MERCREDI = 'MERCREDI'
-    JEUDI = 'JEUDI'
-    VENDREDI = 'VENDREDI'
-    SAMEDI = 'SAMEDI'
-    DIMANCHE = 'DIMANCHE'
+# class WeekdayEnum(Enum):
+class WeekdayEnum(str, enum.Enum):
+    MONDAY = 'MONDAY'
+    TUESDAY = 'TUESDAY'
+    WEDNESDAY = 'WEDNESDAY'
+    THURSDAY = 'THURSDAY'
+    FRIDAY = 'FRIDAY'
+    SATURDAY = 'SATURDAY'
+    SUNDAY = 'SUNDAY'
 class ScheduleTime(Base):
     __tablename__ = "schedule_times"
 
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
-    daily_day = Column(Enum(WeekdayEnum))
-    # daily_day = Column(Enum('LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'))
+    # daily_day = Column(Enum(WeekdayEnum, name='weekday'), nullable=False)
+    # daily_day = Column(Enum(WeekdayEnum, name='weekday',  length=50), nullable=False)
+    daily_day = Column(Enum(WeekdayEnum, name='weekday'), nullable=False, default="LUNDI")
     open_hour = Column(String, unique=False, nullable=False)
     close_hour = Column(String, unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -538,6 +540,7 @@ class Anounce(Base):
     
     # Colonnes étrangères inversées
     anounce_multimedias = relationship("AnounceMultimedia", back_populates="anounce")
+    likes = relationship("Like", back_populates="anounce")
     
      
 # Event : doing
@@ -567,6 +570,7 @@ class Event(Base):
     
     # Colonnes étrangères inversées
     event_multimedias = relationship("EventMultimedia", back_populates="event")
+    likes = relationship("Like", back_populates="event")
     
     
 # LabelEvent : doing   
@@ -672,6 +676,29 @@ class Favorite(Base):
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
     entertainment_site = relationship("EntertainmentSite", back_populates="favorites")
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+# Anounce : doing
+class Like(Base):
+    __tablename__ = "likes"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    owner_id = Column(String, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    owner = relationship("User", back_populates="favorites")
+    
+    event_id = Column(String, ForeignKey(
+        "events.id", ondelete="CASCADE"), nullable=True)
+    event = relationship("EntertainmentSite", back_populates="likes")
+    
+    anounce_id = Column(String, ForeignKey(
+        "anounces.id", ondelete="CASCADE"), nullable=True)
+    anounce = relationship("Anounce", back_populates="likes")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)

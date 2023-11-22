@@ -46,5 +46,15 @@ async def logout(request: Request, current_user : str = Depends(oauth2.get_curre
     
     if token is not None:
         return {"error": "Invalid token"}
+    
+    # async def user_logout(request: Request):
+    #         token_value = request.auth.backend.get_user_token(request=request)
+    #         with contextlib.suppress(Exception):
+    #             await self.auth.backend.token_store.destroy_token(token=token_value)
+    #         response = RedirectResponse(url="/")
+    #         response.delete_cookie("Authorization")
+    #         return response
+
+    #     return user_logout
 
     return {"message": "User successfully logged out"}

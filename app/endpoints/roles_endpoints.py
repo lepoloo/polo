@@ -24,6 +24,9 @@ router = APIRouter(prefix = "/role", tags=['Roles Requests'])
 # create a new permission sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=roles_schemas.RoleListing)
 async def create_role(new_role_c: roles_schemas.RoleCreate, db: Session = Depends(get_db),current_user : str = Depends(oauth2.get_current_user)):
+    role_query = db.query(models.Role).filter(models.Role.name == new_role_c.name).first()
+    if  role_query:
+        raise HTTPException(status_code=403, detail="This role also exists!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
@@ -63,7 +66,7 @@ async def read_role_actif(skip: int = 0, limit: int = 100, db: Session = Depends
 # Get an role
 @router.get("/get/{role_id}", status_code=status.HTTP_200_OK, response_model=roles_schemas.RoleDetail)
 async def detail_role(role_id: str, db: Session = Depends(get_db)):
-    role_query = db.query(models.Role).filter(models.Role.id == role_id).first()
+    role_query = db.query(models.Role).filter(models.Role.id == role_id, models.Role.active == "True").first()
     if not role_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {role_id} does not exist")
     return jsonable_encoder(role_query)

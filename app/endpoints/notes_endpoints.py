@@ -22,9 +22,12 @@ models.Base.metadata.create_all(bind=engine)
 router = APIRouter(prefix = "/note", tags=['notes Requests'])
  
 # create note or disnote
-@router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=notes_schemas.NoteListing)
+@router.post("/create/", status_code = status.HTTP_201_CREATED)
 async def create_note(new_note_c: notes_schemas.NoteCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
-    notes_queries = db.query(models.Note).filter(models.Note.entertainment_site_id == new_note_c.entertainment_site_id,models.Note.owner_id == new_note_c.owner_id ).all()
+    notes_queries = db.query(models.Note).filter(models.Note.entertainment_site_id == new_note_c.entertainment_site_id,models.Note.owner_id == new_note_c.owner_id ).first()
+    # print(notes_queries.__dict__)
+    # print(new_note_c)
+    # input("entrer un nombre")
     if notes_queries:
         notes_queries.note = new_note_c.note
         try:
@@ -56,7 +59,7 @@ async def create_note(new_note_c: notes_schemas.NoteCreate, db: Session = Depend
             raise HTTPException(status_code=403, detail="Somthing is wrong in the process, pleace try later sorry!")
            
     
-    return jsonable_encoder(notes_queries)
+    return {"message": "Note save."}
 
 # Get all notes requests
 @router.get("/get_all_actif/", response_model=List[notes_schemas.NoteListing])
