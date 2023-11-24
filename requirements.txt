@@ -13,3 +13,4 @@ passlib
 python-jose
 ppillow
 python-multipart
+python-dotenv

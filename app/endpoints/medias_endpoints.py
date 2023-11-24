@@ -1,7 +1,8 @@
 import os
 from fastapi import APIRouter, HTTPException, Depends, status, Request, File, UploadFile,Form
 from app.models import models
-from configs.settings import admin_mail,PARENT_MEDIA_NAME
+from app import config
+# from configs.settings import admin_mail,PARENT_MEDIA_NAME
 from app.database import engine, get_db
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -13,7 +14,7 @@ from PIL import Image
 models.Base.metadata.create_all(bind=engine)
 
 # /users/
-
+PARENT_MEDIA_NAME = config.parent_media_name
 router = APIRouter(prefix = "/medias", tags=['Medias Requests'])
  
 @router.post("/uploadfile/")
@@ -42,6 +43,8 @@ async def create_media(file: UploadFile = File(...), media_use : str = None):
         image.save(f"{PARENT_MEDIA_NAME}/event_multi_medias/{file.filename}")
     elif media_use == "anounce_multi_medias":
         image.save(f"{PARENT_MEDIA_NAME}/anounce_multi_medias/{file.filename}")
+    elif media_use == "category_site_multi_medias":
+        image.save(f"{PARENT_MEDIA_NAME}/category_site_multi_medias/{file.filename}")
     elif media_use == "entertainment_site_multi_medias":
         image.save(f"{PARENT_MEDIA_NAME}/entertainment_site_multi_medias/{file.filename}")
     else :
@@ -109,6 +112,8 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
             media.save(f"{PARENT_MEDIA_NAME}/event_multi_medias/{file.filename}")
         elif media_use == "anounce_multi_medias":
             media.save(f"{PARENT_MEDIA_NAME}/anounce_multi_medias/{file.filename}")
+        elif media_use == "category_site_multi_medias":
+            media.save(f"{PARENT_MEDIA_NAME}/category_site_multi_medias/{file.filename}")
         elif media_use == "entertainment_site_multi_medias":
             media.save(f"{PARENT_MEDIA_NAME}/entertainment_site_multi_medias/{file.filename}")
         else :

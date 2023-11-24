@@ -5,7 +5,8 @@ from typing import Optional
 
 class Like(BaseModel):
     owner_id: str
-    entertainment_site_id: str
+    event_id: Optional[constr(max_length=256)] = None
+    anounce_id: Optional[constr(max_length=256)] = None
     
     
 
@@ -34,6 +35,7 @@ class LikeDetail(LikeListing):
 
 class LikeUpdate(BaseModel):
     owner_id: Optional[constr(max_length=256)] = None
-    entertainment_site_id: Optional[constr(max_length=256)] = None
+    event_id: Optional[constr(max_length=256)] = None
+    anounce_id: Optional[constr(max_length=256)] = None
     
 

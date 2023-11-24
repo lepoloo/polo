@@ -7,8 +7,7 @@ from app.schemas import countries_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from configs.settings import admin_mail,PROJECT_NAME
-import random, uuid
+import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
@@ -24,6 +23,9 @@ router = APIRouter(prefix = "/country", tags=['Countrys Requests'])
 # create a new country sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=countries_schemas.CountryListing)
 async def create_country(new_country_c: countries_schemas.CountryCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    country_query = db.query(models.Country).filter(models.Country.name == new_country_c.name).first()
+    if  country_query:
+        raise HTTPException(status_code=403, detail="This country also existe!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
@@ -79,7 +81,7 @@ async def detail_country_by_attribute(refnumber: Optional[str] = None, name: Opt
 # Get an country
 @router.get("/get/{country_id}", status_code=status.HTTP_200_OK, response_model=countries_schemas.CountryDetail)
 async def detail_country(country_id: str, db: Session = Depends(get_db)):
-    country_query = db.query(models.Country).filter(models.Country.id == country_id).first()
+    country_query = db.query(models.Country).filter(models.Country.id == country_id, models.Country.active == "True").first()
     if not country_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"country with id: {country_id} does not exist")
     return jsonable_encoder(country_query)

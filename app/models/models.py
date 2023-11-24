@@ -4,8 +4,6 @@ from app.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import enum
-# from sqlalchemy import Column, Enum
-# from enum import Enum, EnumMeta
 
 ######################## User #############################
 class GenderType(enum.Enum):
@@ -40,6 +38,7 @@ class User(Base):
     profils = relationship("Profil", back_populates="owner")
     notes = relationship("Note", back_populates="owner")
     favorites = relationship("Favorite", back_populates="owner")
+    likes = relationship("Like", back_populates="owner")
     
     
 
@@ -146,12 +145,9 @@ class ProfilRole(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
+      
     
-    # Colonnes étrangères inversées
-    profil = relationship("Profil", back_populates="profil_roles")
-    
-    
-# ProfilPrivilege : to do   
+# ProfilPrivilege : doing   
 class ProfilPrivilege(Base):
     __tablename__ = "profil_privileges"
 
@@ -170,9 +166,6 @@ class ProfilPrivilege(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
-    
-    # Colonnes étrangères inversées
-    profil = relationship("Profil", back_populates="profil_privileges")
     
 
     ######################## Card #############################
@@ -307,7 +300,7 @@ class Town(Base):
 
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, unique=False, index=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -327,7 +320,7 @@ class Quarter(Base):
 
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, unique=False, index=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -437,7 +430,7 @@ class Program(Base):
     entertainment_site = relationship("EntertainmentSite", back_populates="programs")
     
     # Colonnes étrangères inversées
-    schedule_time = relationship("ScheduleTime", back_populates="programs")
+    schedule_times = relationship("ScheduleTime", back_populates="program")
  
 
  
@@ -456,8 +449,6 @@ class ScheduleTime(Base):
 
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
-    # daily_day = Column(Enum(WeekdayEnum, name='weekday'), nullable=False)
-    # daily_day = Column(Enum(WeekdayEnum, name='weekday',  length=50), nullable=False)
     daily_day = Column(Enum(WeekdayEnum, name='weekday'), nullable=False, default="LUNDI")
     open_hour = Column(String, unique=False, nullable=False)
     close_hour = Column(String, unique=False, nullable=False)
@@ -468,7 +459,7 @@ class ScheduleTime(Base):
     active = Column(Boolean, default=True)
     program_id = Column(String, ForeignKey(
         "programs.id", ondelete="CASCADE"), nullable=False)
-    programs = relationship("Program", back_populates="schedule_time")
+    program = relationship("Program", back_populates="schedule_times")
     
  
  
@@ -479,19 +470,17 @@ class EntertainmentSite(Base):
 
     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
     refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, unique=False, index=True, nullable=False)
     description = Column(String(length=65535), nullable=True)
     nb_visite = Column(Integer, server_default=text("0"))
     address = Column(String, unique=True, nullable=False)
-    longitude = Column(String, unique=True, nullable=False)
-    latitude = Column(String, unique=True, nullable=False)
+    longitude = Column(String, unique=False, nullable=False)
+    latitude = Column(String, unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
-    # images = Column(ARRAY(String))
-    
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
     owner = relationship("User", back_populates="entertainment_sites")
@@ -500,9 +489,6 @@ class EntertainmentSite(Base):
         "quarters.id", ondelete="CASCADE"), nullable=False)
     quarter = relationship("Quarter", back_populates="entertainment_sites")
     
-    # category_site_id = Column(String, ForeignKey(
-    #     "category_sites.id", ondelete="CASCADE"), nullable=False)
-    # category_site = relationship("CategorySite", back_populates="entertainment_sites")
     
     # Colonnes étrangères inversées countryId
     cards = relationship("Card", back_populates="entertainment_site")
@@ -690,11 +676,11 @@ class Like(Base):
     refnumber = Column(String, unique=True, nullable=False)
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
-    owner = relationship("User", back_populates="favorites")
+    owner = relationship("User", back_populates="likes")
     
     event_id = Column(String, ForeignKey(
         "events.id", ondelete="CASCADE"), nullable=True)
-    event = relationship("EntertainmentSite", back_populates="likes")
+    event = relationship("Event", back_populates="likes")
     
     anounce_id = Column(String, ForeignKey(
         "anounces.id", ondelete="CASCADE"), nullable=True)

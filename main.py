@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import configs.settings as settings
+import os
+from dotenv import load_dotenv
+load_dotenv()
+# import configs.settings as settings
+from app import config
 import logging
 
 from app.endpoints.auths_endpoints import router as auths_endpoints_routers
@@ -40,8 +44,11 @@ from app.endpoints.notes_endpoints import router as notes_routers
 logging.basicConfig(level=logging.INFO)  # Niveau de journalisation souhaité, par exemple INFO
 
 # FastAPI Configuration
-# app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION,docs_url=None)
-app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION)
+
+if config.debug == "True":
+    app = FastAPI(title=config.project_name,version=config.project_version)
+else:
+    app = FastAPI(title=config.project_name,version=config.project_version, docs_url = None)
 
 
 # Create a GET-based route for the root URL.

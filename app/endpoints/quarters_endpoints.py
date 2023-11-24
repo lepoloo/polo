@@ -7,8 +7,7 @@ from app.schemas import quarters_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from configs.settings import admin_mail,PROJECT_NAME
-import random, uuid
+import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
@@ -24,7 +23,9 @@ router = APIRouter(prefix = "/quarter", tags=['Quarters Requests'])
 # create a new quarter sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=quarters_schemas.QuarterListing)
 async def create_quarter(new_quarter_c: quarters_schemas.QuarterCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
-    
+    quarter_query = db.query(models.Quarter).filter(models.Quarter.name == new_quarter_c.name, models.Quarter.town_id == new_quarter_c.town_id).first()
+    if  quarter_query:
+        raise HTTPException(status_code=403, detail="This quarter also existe!")
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001
@@ -81,7 +82,7 @@ async def detail_quarter_by_attribute(refnumber: Optional[str] = None, town_id: 
 # Get an quarter
 @router.get("/get/{quarter_id}", status_code=status.HTTP_200_OK, response_model=quarters_schemas.QuarterDetail)
 async def detail_quarter(quarter_id: str, db: Session = Depends(get_db)):
-    quarter_query = db.query(models.Quarter).filter(models.Quarter.id == quarter_id).first()
+    quarter_query = db.query(models.Quarter).filter(models.Quarter.id == quarter_id, models.Quarter.active == "True").first()
     if not quarter_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"quarter with id: {quarter_id} does not exist")
     return jsonable_encoder(quarter_query)

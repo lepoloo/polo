@@ -7,13 +7,14 @@ from app.schemas import programs_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from configs.settings import admin_mail,PROJECT_NAME
-import random, uuid
+import uuid
+from sqlalchemy import func
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
 from  utils import oauth2
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+# from app.schemas.schedule_times_schemas import ScheduleTimeListing
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -24,6 +25,9 @@ router = APIRouter(prefix = "/program", tags=['Programs Requests'])
 # create a new program sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=programs_schemas.ProgramListing)
 async def create_program(new_program_c: programs_schemas.ProgramCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    program_query = db.query(models.Program).filter(models.Program.name == new_program_c.name, models.Program.entertainment_site_id == new_program_c.entertainment_site_id).first()
+    if  program_query:
+        raise HTTPException(status_code=403, detail="This Programm also exists for this entertaiment site!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
@@ -83,9 +87,17 @@ async def detail_program_by_attribute(refnumber: Optional[str] = None, entertain
 # Get an program
 @router.get("/get/{program_id}", status_code=status.HTTP_200_OK, response_model=programs_schemas.ProgramDetail)
 async def detail_program(program_id: str, db: Session = Depends(get_db)):
-    program_query = db.query(models.Program).filter(models.Program.id == program_id).first()
+    program_query = db.query(models.Program).filter(models.Program.id == program_id, models.Program.active == "True").first()
+    # program_query = db.query(models.Program).join(
+    #     models.ScheduleTime, models.ScheduleTime.program_id == models.Program.id, isouter=True).group_by(models.Program.id).filter(models.Program.id == program_id, models.Program.active == "True").first()
+    # program_query = db.query(models.Program, func.count(models.ScheduleTime.program_id).label("schedule_times")).join(
+    #     models.ScheduleTime, models.ScheduleTime.program_id == models.Program.id, isouter=True).group_by(models.Program.id).filter(models.Program.id == program_id, models.Program.active == "True").first()
+    
+    # input("vous êtes ici")
     if not program_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"program with id: {program_id} does not exist")
+    
+    print(program_query.__dict__)
     return jsonable_encoder(program_query)
 
 

@@ -7,7 +7,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from dotenv import load_dotenv
-from configs.settings import smtp_host, smtp_port, smtp_username, smtp_password # autre
+# from configs.settings import smtp_host, smtp_port, smtp_username, smtp_password # autre
+from app import config
 load_dotenv('.env')
 
 # fetch les données
@@ -30,10 +31,10 @@ def verify(plain_password, hashed_password):
 
 # send mail
 class Envs:
-    smtp_host_sys = smtp_host
-    smtp_port_sys = smtp_port
-    smtp_username_sys = smtp_username
-    smtp_password_sys = smtp_password
+    smtp_host_sys = config.smtp_host
+    smtp_port_sys = config.smtp_port
+    smtp_username_sys = config.smtp_username
+    smtp_password_sys = config.smtp_password
 
 def send_email(to_email: str, subject: str, content: str):
     # Paramètres d'authentification du serveur SMTP

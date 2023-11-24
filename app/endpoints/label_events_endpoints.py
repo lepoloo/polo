@@ -7,8 +7,7 @@ from app.schemas import label_events_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from configs.settings import admin_mail,PROJECT_NAME
-import random, uuid
+import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
@@ -25,6 +24,9 @@ router = APIRouter(prefix = "/label_event", tags=['Labels events Requests'])
 # create a new permission sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=label_events_schemas.LabelEventListing)
 async def create_label_event(new_label_event_c: label_events_schemas.LabelEventCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    label_event_query = db.query(models.LabelEvent).filter(models.LabelEvent.name == new_label_event_c.name).first()
+    if  label_event_query:
+        raise HTTPException(status_code=403, detail="This label event also exists !")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date

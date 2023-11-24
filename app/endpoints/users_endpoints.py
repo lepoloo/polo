@@ -7,9 +7,8 @@ from app.schemas import users_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from utils.users_utils import send_email, hash
-from configs.settings import admin_mail,PROJECT_NAME
-import random, uuid
+from utils.users_utils import hash
+import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional

@@ -7,8 +7,7 @@ from app.schemas import category_sites_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from configs.settings import admin_mail,PROJECT_NAME
-import random, uuid
+import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
@@ -24,6 +23,9 @@ router = APIRouter(prefix = "/category_site", tags=['Category Sites Requests'])
 # create a new permission sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=category_sites_schemas.CategorySiteListing)
 async def create_category_site(new_category_site_c: category_sites_schemas.CategorySiteCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    category_site_query = db.query(models.CategorySite).filter(models.CategorySite.name == new_category_site_c.name).first()
+    if  category_site_query:
+        raise HTTPException(status_code=403, detail="This category site also exists!")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date

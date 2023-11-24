@@ -7,8 +7,7 @@ from app.schemas import privilege_roles_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from configs.settings import admin_mail,PROJECT_NAME
-import random, uuid
+import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
