@@ -9,6 +9,8 @@ project_name: str = os.getenv("PROJECT_NAME", "POLO")
 project_version: str = os.getenv("PROJECT_VERSION", "1.0.0")
 debug: str = os.getenv("DEBUG", "True")
 # connexion DB
+database_client_alembic: str = os.getenv("DATABASE_CLIENT_ALEMBIC")
+database_client: str = os.getenv("DATABASE_CLIENT")
 database_username: str = os.getenv("DATABASE_USER")
 database_password: str = os.getenv("DATABASE_PASSWORD")
 database_hostname: str = os.getenv("DATABASE_HOST")

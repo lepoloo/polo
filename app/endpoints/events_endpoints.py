@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
 from  utils import oauth2
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from apscheduler.schedulers.background import BackgroundScheduler
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -206,3 +206,29 @@ async def restore_event(event_id: str,  db: Session = Depends(get_db), current_u
     
     
     return jsonable_encoder(event_query)
+
+
+# Déactivation des tâches expiré
+def update_attribute(db: Session = Depends(get_db)):
+    
+    # Exemple de mise à jour d'une valeur dans la table
+    formated_date = datetime.now()
+    events_queries = db.query(models.Event).filter(models.Event.active == "True").all()
+    for events_querie in events_queries :
+        if events_querie.end_date < formated_date:
+            events_querie.active = "False"
+            db.commit()
+            db.refresh(events_querie)
+    
+    db.close()
+
+# Configuration de l'ordonnanceur
+scheduler = BackgroundScheduler()
+scheduler.add_job(update_attribute, 'interval', hours=1)
+scheduler.start()
+
+# Tâche pour arrêter l'ordonnanceur lorsque l'application FastAPI se ferme
+def close_scheduler():
+    scheduler.shutdown()
+
+router.add_event_handler("shutdown", close_scheduler)

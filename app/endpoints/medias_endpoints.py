@@ -54,7 +54,7 @@ async def create_media(file: UploadFile = File(...), media_use : str = None):
 
 
 @router.get("/image/{image_name},{media_use}")
-async def get_media(image_name: str,media_use: str):
+async def get_media(image_name: str, media_use: str):
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
     image_path = os.path.join(child_path, image_name)
     return FileResponse(image_path)
@@ -70,6 +70,30 @@ async def get_media(image_name: str,media_use: str):
 #         responses.append(FileResponse(image_path))
       
 #     return responses
+@router.post("/upload-video/")
+async def upload_video(video: UploadFile = File(...), media_use : str = None):
+    if not os.path.exists(PARENT_MEDIA_NAME):
+        os.makedirs(PARENT_MEDIA_NAME)
+        print(f"Répertoire {media_use} créé avec succès!")
+    
+    # Vérifier si le répertoire enfant existe
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    if not os.path.exists(child_path):
+        os.makedirs(child_path)
+    # Sauvegarde la photo de profil
+    video = video.open(video.file) 
+    
+    if media_use == "live":
+        video.save(f"{PARENT_MEDIA_NAME}/live/{video.filename}")
+        # Sauvegarder la vidéo
+        video_path = os.path.join(child_path, video.filename)
+        with open(video_path, "wb") as video_file:
+            video_file.write(video.file.read())
+    else :
+        raise HTTPException(status_code=403, detail="this file cannot be saved, sorry!")   
+    
+    return {"filename": video.filename}
+
 
 @router.get("/images/{image_names:List[str]}/{media_use:str}")
 async def get_media_files(image_names: List[str], media_use: str):
@@ -119,3 +143,29 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
         else :
             raise HTTPException(status_code=403, detail="this file cannot be saved, sorry!")
     return {"media information": image_infos}
+
+
+# Suppression  des vidéos expiré
+# def update_attribute(db: Session = Depends(get_db)):
+    
+#     # Exemple de mise à jour d'une valeur dans la table
+#     formated_date = datetime.now()
+#     events_queries = db.query(models.Event).filter(models.Event.active == "True").all()
+#     for events_querie in events_queries :
+#         if events_querie.end_date < formated_date:
+#             events_querie.active = "False"
+#             db.commit()
+#             db.refresh(events_querie)
+    
+#     db.close()
+
+# # Configuration de l'ordonnanceur
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(update_attribute, 'interval', hours=1)
+# scheduler.start()
+
+# # Tâche pour arrêter l'ordonnanceur lorsque l'application FastAPI se ferme
+# def close_scheduler():
+#     scheduler.shutdown()
+
+# router.add_event_handler("shutdown", close_scheduler)

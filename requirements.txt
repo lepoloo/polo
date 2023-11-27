@@ -1,16 +1,17 @@
 fastapi [all]
-sqlalchemy
-psycopg2
-uvicorn
-alembic
+sqlalchemy # ORM
+psycopg2 # client de base de données
+# databases[mysql]# pour my sql
+uvicorn # serveur d'application
+alembic # gestion de migration
 secure-smtplib
-python-dotenv
-loguru
-fastapi_permissions
-PyJWT
+loguru # gestion de log
+fastapi_permissions # gestion des permissions
+PyJWT 
 bcrypt
 passlib
 python-jose
 ppillow
-python-multipart
-python-dotenv
+python-multipart # gestion des médiat
+python-dotenv # gestion des variable d'environnement
+apscheduler # automatisation des tâches
