@@ -88,16 +88,13 @@ async def detail_program_by_attribute(refnumber: Optional[str] = None, entertain
 @router.get("/get/{program_id}", status_code=status.HTTP_200_OK, response_model=programs_schemas.ProgramDetail)
 async def detail_program(program_id: str, db: Session = Depends(get_db)):
     program_query = db.query(models.Program).filter(models.Program.id == program_id, models.Program.active == "True").first()
-    # program_query = db.query(models.Program).join(
-    #     models.ScheduleTime, models.ScheduleTime.program_id == models.Program.id, isouter=True).group_by(models.Program.id).filter(models.Program.id == program_id, models.Program.active == "True").first()
-    # program_query = db.query(models.Program, func.count(models.ScheduleTime.program_id).label("schedule_times")).join(
-    #     models.ScheduleTime, models.ScheduleTime.program_id == models.Program.id, isouter=True).group_by(models.Program.id).filter(models.Program.id == program_id, models.Program.active == "True").first()
     
-    # input("vous êtes ici")
     if not program_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"program with id: {program_id} does not exist")
-    
-    print(program_query.__dict__)
+    schedule_times = program_query.schedule_times
+    for schedule_time in schedule_times:
+        details = [{ 'id': schedule_time.id, 'refnumber': schedule_time.refnumber, 'daily_day': schedule_time.daily_day, 'program_id': schedule_time.program_id, 'open_hour': schedule_time.open_hour, 'close_hour': schedule_time.close_hour} for schedule_time in schedule_times]
+    schedule_times = details
     return jsonable_encoder(program_query)
 
 

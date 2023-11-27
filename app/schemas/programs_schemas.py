@@ -27,7 +27,7 @@ class ProgramDetail(ProgramListing):
     created_by: str
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
-    # schedule_times :List[ScheduleTimeListing]
+    schedule_times : List[ScheduleTimeListing]
     
     class Config:
         from_attributes = True 

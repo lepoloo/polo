@@ -1,8 +1,11 @@
 from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator, constr,Field
 from datetime import datetime, date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from app.schemas.profils_schemas import ProfilListing
+from app.schemas.likes_schemas import LikeListing
+from app.schemas.notes_schemas import NoteListing
+from app.schemas.favorites_schemas import FavoriteListing
 from app.schemas.entertainment_sites_schemas import EntertainmentSiteListing
 from app.models.models import GenderType
 
@@ -39,10 +42,13 @@ class UserDetail(UserListing):
     is_owner: bool
     created_at: datetime
     created_by: str
-    # entertainment_site: ProfilListing
-    # profil:EntertainmentSiteListing
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
+    profils: List[ProfilListing]
+    entertainment_sites: List[EntertainmentSiteListing]
+    notes: List[NoteListing]
+    favorites: List[FavoriteListing]
+    likes: List[LikeListing]
     
     class Config:
         from_attributes = True 
