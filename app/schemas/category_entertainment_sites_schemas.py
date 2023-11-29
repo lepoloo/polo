@@ -16,6 +16,7 @@ class CategoryEntertainmentSiteCreate(CategoryEntertainmentSite):
 class CategoryEntertainmentSiteListing(CategoryEntertainmentSite):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

@@ -19,6 +19,7 @@ class ScheduleTimeCreate(ScheduleTime):
 class ScheduleTimeListing(ScheduleTime):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

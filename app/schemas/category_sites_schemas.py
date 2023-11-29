@@ -16,6 +16,7 @@ class CategorySiteCreate(CategorySite):
 class CategorySiteListing(CategorySite):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

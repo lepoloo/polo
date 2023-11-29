@@ -24,6 +24,10 @@ router = APIRouter(prefix = "/event", tags=['Events Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=events_schemas.EventListing)
 async def create_event(new_event_c: events_schemas.EventCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
+    event_query = db.query(models.Event).filter(models.Event.label_event_id == new_event_c.label_event_id, models.Event.entertainment_site_id == new_event_c.entertainment_site_id, models.Event.name == new_event_c.name).first()
+    if  event_query:
+        raise HTTPException(status_code=403, detail="This event also exists !")
+    
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001
@@ -72,7 +76,24 @@ async def detail_event(event_id: str, db: Session = Depends(get_db)):
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
-    # event_query = db.query(models.Event).filter(models.Event.id == event_id).first()
+    
+    # entertainment_site = event_query.entertainment_site
+    # details = { 'id': entertainment_site.id, 'refnumber': entertainment_site.refnumber, 'name': entertainment_site.name, 'description': entertainment_site.description, 'address': entertainment_site.address, 'longitude': entertainment_site.longitude, 'latitude': entertainment_site.latitude, 'quarter_id': entertainment_site.quarter_id, 'owner_id': entertainment_site.owner_id, 'nb_visite': entertainment_site.nb_visite}
+    # entertainment_site = details
+    
+    # label_event = event_query.label_event
+    # details = { 'id': label_event.id, 'refnumber': label_event.refnumber, 'name': label_event.name, 'description': label_event.description}
+    # label_event = details
+    
+    event_multimedias = event_query.event_multimedias
+    for event_multimedia in event_multimedias:
+        details = [{ 'id': event_multimedia.id, 'refnumber': event_multimedia.refnumber, 'link_media': event_multimedia.link_media, 'event_id': event_multimedia.event_id, 'active': event_multimedia.active} for event_multimedia in event_multimedias]
+    event_multimedias = details
+    likes = event_query.likes
+    for like in likes:
+        details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
+    likes = details
+        
     return jsonable_encoder(event_query)
 
 # Get an event

@@ -22,6 +22,7 @@ class CountryCreate(Country):
 class CountryListing(Country):
     id: str
     refnumber: str
+    active: bool
     # town : List[TownListing]=[]
     
     class Config:

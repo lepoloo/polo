@@ -16,6 +16,7 @@ class LabelEventCreate(LabelEvent):
 class LabelEventListing(LabelEvent):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

@@ -18,6 +18,7 @@ class TownCreate(Town):
 class TownListing(Town):
     id: str
     refnumber: str
+    active: bool
     # country: CountryListing
     # country_id: countries_schemas.CountryListing
     

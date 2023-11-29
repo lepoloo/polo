@@ -16,6 +16,7 @@ class ProfilPrivilegeCreate(ProfilPrivilege):
 class ProfilPrivilegeListing(ProfilPrivilege):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

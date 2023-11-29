@@ -17,6 +17,7 @@ class QuarterCreate(Quarter):
 class QuarterListing(Quarter):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

@@ -16,6 +16,7 @@ class RoleCreate(Role):
 class RoleListing(Role):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

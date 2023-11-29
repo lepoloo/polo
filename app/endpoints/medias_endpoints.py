@@ -36,17 +36,17 @@ async def create_media(file: UploadFile = File(...), media_use : str = None):
     # file.filename = formated_date+":"+file.filename
     if media_use == "user_medias":
         image.thumbnail((500, 500))  # Redimensionne l'image en 500x500 pixels
-        image.save(f"{PARENT_MEDIA_NAME}/user_medias/{file.filename}")
+        image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     elif media_use == "product_medias":
-        image.save(f"{PARENT_MEDIA_NAME}/product_medias/{file.filename}")
+        image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     elif media_use == "event_multi_medias":
-        image.save(f"{PARENT_MEDIA_NAME}/event_multi_medias/{file.filename}")
+        image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     elif media_use == "anounce_multi_medias":
-        image.save(f"{PARENT_MEDIA_NAME}/anounce_multi_medias/{file.filename}")
+        image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     elif media_use == "category_site_multi_medias":
-        image.save(f"{PARENT_MEDIA_NAME}/category_site_multi_medias/{file.filename}")
+        image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     elif media_use == "entertainment_site_multi_medias":
-        image.save(f"{PARENT_MEDIA_NAME}/entertainment_site_multi_medias/{file.filename}")
+        image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     else :
         raise HTTPException(status_code=403, detail="this file cannot be saved, sorry!")
         
@@ -55,56 +55,13 @@ async def create_media(file: UploadFile = File(...), media_use : str = None):
 
 @router.get("/image/{image_name},{media_use}")
 async def get_media(image_name: str, media_use: str):
+    if media_use != "user_medias" or media_use != "product_medias" or media_use != "anounce_multi_medias" or media_use != "event_multi_medias" or media_use != "category_site_multi_medias" or media_use != "entertainment_site_multi_medias":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"we don't have media files this media file!")
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
     image_path = os.path.join(child_path, image_name)
     return FileResponse(image_path)
 
-# # @router.get("/images/{image_names},{media_use}")
-# @router.get("/images/{image_names}/{media_use}")
-# async def get_media_files(image_names: List[str], media_use: str):
-#     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
-    
-#     responses = []
-#     for image_name in image_names:
-#         image_path = os.path.join(child_path, image_name)
-#         responses.append(FileResponse(image_path))
-      
-#     return responses
-@router.post("/upload-video/")
-async def upload_video(video: UploadFile = File(...), media_use : str = None):
-    if not os.path.exists(PARENT_MEDIA_NAME):
-        os.makedirs(PARENT_MEDIA_NAME)
-        print(f"Répertoire {media_use} créé avec succès!")
-    
-    # Vérifier si le répertoire enfant existe
-    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
-    if not os.path.exists(child_path):
-        os.makedirs(child_path)
-    # Sauvegarde la photo de profil
-    video = video.open(video.file) 
-    
-    if media_use == "live":
-        video.save(f"{PARENT_MEDIA_NAME}/live/{video.filename}")
-        # Sauvegarder la vidéo
-        video_path = os.path.join(child_path, video.filename)
-        with open(video_path, "wb") as video_file:
-            video_file.write(video.file.read())
-    else :
-        raise HTTPException(status_code=403, detail="this file cannot be saved, sorry!")   
-    
-    return {"filename": video.filename}
 
-
-@router.get("/images/{image_names:List[str]}/{media_use:str}")
-async def get_media_files(image_names: List[str], media_use: str):
-    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
-    
-    responses = []
-    for image_name in image_names:
-        image_path = os.path.join(child_path, image_name)
-        responses.append(FileResponse(image_path))
-      
-    return responses
 
 
 @router.post("/uploadfiles/")
@@ -121,29 +78,87 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
     if not os.path.exists(child_path):
         os.makedirs(child_path)
     media_name = [file.filename for file in files]
-    media_size=[len(file) for file in files]
-    image_infos={media_name, media_size}
+    # media_size=[len(file) for file in files]
+    # image_infos={media_name, media_size}
     for file in files:
         # Sauvegarde la photo de profil
         media = Image.open(file.file)
         # file.filename = formated_date+":"+file.filename
         if media_use == "user_medias":
             media.thumbnail((500, 500))  # Redimensionne l'image en 500x500 pixels
-            media.save(f"{PARENT_MEDIA_NAME}/user_medias/{file.filename}")
+            media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "product_medias":
-            media.save(f"{PARENT_MEDIA_NAME}/product_medias/{file.filename}")
+            media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "event_multi_medias":
-            media.save(f"{PARENT_MEDIA_NAME}/event_multi_medias/{file.filename}")
+            media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "anounce_multi_medias":
-            media.save(f"{PARENT_MEDIA_NAME}/anounce_multi_medias/{file.filename}")
+            media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "category_site_multi_medias":
-            media.save(f"{PARENT_MEDIA_NAME}/category_site_multi_medias/{file.filename}")
+            media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "entertainment_site_multi_medias":
-            media.save(f"{PARENT_MEDIA_NAME}/entertainment_site_multi_medias/{file.filename}")
+            media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         else :
             raise HTTPException(status_code=403, detail="this file cannot be saved, sorry!")
-    return {"media information": image_infos}
+    # return {"media information": image_infos}
+    return {"media information": media_name}
 
+
+# renvois une liste d'image
+@router.get("/images/{image_names:List[str]}/{media_use:str}")
+async def get_media_files(image_names: List[str], media_use: str):
+    if media_use != "user_medias" or media_use != "product_medias" or media_use != "anounce_multi_medias" or media_use != "event_multi_medias" or media_use != "category_site_multi_medias" or media_use != "entertainment_site_multi_medias":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"we don't have media files this media file!")
+    
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    
+    responses = []
+    for image_name in image_names:
+        image_path = os.path.join(child_path, image_name)
+        responses.append(FileResponse(image_path))
+      
+    return responses
+
+# upmode la video
+@router.post("/upload_video/")
+async def upload_video(files: list[UploadFile] = File(...), media_use : str = None):
+    if not os.path.exists(PARENT_MEDIA_NAME):
+        os.makedirs(PARENT_MEDIA_NAME)
+        print(f"Répertoire {media_use} créé avec succès!")
+    
+    # Vérifier si le répertoire enfant existe
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    if not os.path.exists(child_path):
+        os.makedirs(child_path)
+    # Sauvegarde la photo de profil
+    # video = video.file 
+    responses = []
+    if media_use == "live":
+        for file in files:
+            file_path = os.path.join(child_path, file.filename)
+            with open(file_path, "wb") as video_file:
+                video_file.write(file.file.read())
+            responses.append(FileResponse(file.filename))
+    else :
+        raise HTTPException(status_code=403, detail="this file cannot be saved, sorry!")   
+    
+    return responses
+
+
+# renvois une liste de vidéo
+@router.get("/get_video/{video_files:List[str]}/{media_use:str}")
+async def get_media_files(video_files: List[str], media_use: str):
+    if media_use != "live":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"we don't have media files this media file!")
+    
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    
+    responses = []
+    for video_file in video_files:
+        video_path = os.path.join(child_path, video_file)
+        video_path = os.path.join(child_path, video_file)
+        responses.append(FileResponse(video_path))
+      
+    return responses
 
 # Suppression  des vidéos expiré
 # def update_attribute(db: Session = Depends(get_db)):

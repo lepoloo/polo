@@ -18,6 +18,7 @@ class AnounceListing(Anounce):
     id: str
     refnumber: str
     nb_visite: int
+    active: bool
     
     class Config:
         from_attributes = True 

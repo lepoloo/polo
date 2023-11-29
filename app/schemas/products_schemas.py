@@ -18,6 +18,7 @@ class ProductCreate(Product):
 class ProductListing(Product):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

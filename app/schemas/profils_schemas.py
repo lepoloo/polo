@@ -19,6 +19,7 @@ class ProfilCreate(Profil):
 class ProfilListing(Profil):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

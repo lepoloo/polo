@@ -23,7 +23,9 @@ router = APIRouter(prefix = "/event_multimedia", tags=['Event multimedias Reques
 # create a new event_multimedia sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=event_multimedias_schemas.EventMultimediaListing)
 async def create_event_multimedia(new_event_multimedia_c: event_multimedias_schemas.EventMultimediaCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
-    
+    event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.event_id == new_event_multimedia_c.event_id, models.EventMultimedia.link_media == new_event_multimedia_c.link_media).first()
+    if  event_multimedia_query:
+        raise HTTPException(status_code=403, detail="This event also the same image !")
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001
@@ -61,7 +63,7 @@ async def read_event_multimedias_actif(skip: int = 0, limit: int = 100, db: Sess
 # Get an event_multimedia
 @router.get("/get/{event_multimedia_id}", status_code=status.HTTP_200_OK, response_model=event_multimedias_schemas.EventMultimediaDetail)
 async def detail_event_multimedia(event_multimedia_id: str, db: Session = Depends(get_db)):
-    event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.id == event_multimedia_id).first()
+    event_multimedia_query = db.query(models.EventMultimedia).filter(models.EventMultimedia.id == event_multimedia_id, models.EventMultimedia.active == "True").first()
     if not event_multimedia_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"event_multimedia with id: {event_multimedia_id} does not exist")
     return jsonable_encoder(event_multimedia_query)

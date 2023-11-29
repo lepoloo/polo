@@ -16,6 +16,7 @@ class FavoriteCreate(Favorite):
 class FavoriteListing(Favorite):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

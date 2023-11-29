@@ -19,6 +19,7 @@ class ReservationCreate(Reservation):
 class ReservationListing(Reservation):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 

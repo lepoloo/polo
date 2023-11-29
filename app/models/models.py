@@ -489,7 +489,6 @@ class EntertainmentSite(Base):
         "quarters.id", ondelete="CASCADE"), nullable=False)
     quarter = relationship("Quarter", back_populates="entertainment_sites")
     
-    
     # Colonnes étrangères inversées countryId
     cards = relationship("Card", back_populates="entertainment_site")
     reservations = relationship("Reservation", back_populates="entertainment_site")

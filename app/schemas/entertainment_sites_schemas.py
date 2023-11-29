@@ -2,6 +2,17 @@ from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator
 from datetime import datetime, date
 from enum import Enum
 from typing import Optional, List
+from app.schemas.cards_schemas import CardListing
+from app.schemas.reservations_schemas import ReservationListing
+from app.schemas.comments_schemas import CommentListing
+from app.schemas.programs_schemas import ProgramListing
+from app.schemas.anounces_schemas import AnounceListing
+from app.schemas.events_schemas import EventListing
+from app.schemas.entertainment_site_multimedias_schemas import EntertainmentSiteMultimediaListing
+from app.schemas.profils_schemas import ProfilListing
+from app.schemas.notes_schemas import NoteListing
+from app.schemas.favorites_schemas import FavoriteListing
+from app.schemas.category_entertainment_sites_schemas import CategoryEntertainmentSiteListing
 
 class EntertainmentSite(BaseModel):
     name: str
@@ -24,6 +35,7 @@ class EntertainmentSiteListing(EntertainmentSite):
     owner_id: str
     refnumber: str
     nb_visite: int
+    active: bool
     
     class Config:
         from_attributes = True 
@@ -34,6 +46,17 @@ class EntertainmentSiteDetail(EntertainmentSiteListing):
     created_by: str
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
+    cards: List[CardListing]
+    reservations: List[ReservationListing]
+    comments: List[CommentListing]
+    programs: List[ProgramListing]
+    anounces: List[AnounceListing]
+    events: List[EventListing]
+    profils: List[ProfilListing]
+    entertainment_site_multimedias: List[EntertainmentSiteMultimediaListing]
+    notes: List[NoteListing]
+    favorites: List[FavoriteListing]
+    category_entertainment_sites: List[CategoryEntertainmentSiteListing]
     
     class Config:
         from_attributes = True 

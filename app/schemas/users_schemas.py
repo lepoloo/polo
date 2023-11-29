@@ -24,11 +24,13 @@ class UserCreate(User):
    password: str
    is_staff: bool = False
    is_owner: bool = False
+   
 
 
 class UserListing(User):
     id: str
     refnumber: str
+    active: bool
     # entertainment_site: ProfilListing
     # profil:EntertainmentSiteListing
     

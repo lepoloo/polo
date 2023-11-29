@@ -19,6 +19,7 @@ class CardCreate(Card):
 class CardListing(Card):
     id: str
     refnumber: str
+    active: bool
     
     class Config:
         from_attributes = True 
