@@ -84,9 +84,15 @@ async def detail_product_by_attribute(refnumber: Optional[str] = None, type_prod
 # Get an product
 @router.get("/get/{product_id}", status_code=status.HTTP_200_OK, response_model=products_schemas.ProductDetail)
 async def detail_product(product_id: str, db: Session = Depends(get_db)):
-    product_query = db.query(models.Product).filter(models.Product.id == product_id).first()
+    product_query = db.query(models.Product).filter(models.Product.id == product_id, models.Product.active == "True").first()
     if not product_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"product with id: {product_id} does not exist")
+    
+    menus = product_query.menus
+    
+    details = [{ 'id': menu.id, 'refnumber': menu.refnumber, 'card_id': menu.card_id, 'product_id': menu.product_id, 'price': menu.price, 'active': menu.active} for menu in menus]
+    menus = details
+        
     return jsonable_encoder(product_query)
 
 

@@ -87,6 +87,10 @@ async def detail_town(town_id: str, db: Session = Depends(get_db)):
     town_query = db.query(models.Town).filter(models.Town.id == town_id).first()
     if not town_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"town with id: {town_id} does not exist")
+    quaters = town_query.quaters
+    for quater in quaters:
+        details = [{ 'id': quater.id, 'refnumber': quater.refnumber, 'name': quater.name, 'town_id': quater.town_id, 'active': quater.active} for quater in quaters]
+    quaters = details
     return jsonable_encoder(town_query)
 
 

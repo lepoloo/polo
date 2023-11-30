@@ -19,12 +19,9 @@ router = APIRouter(prefix = "/medias", tags=['Medias Requests'])
  
 @router.post("/uploadfile/")
 async def create_media(file: UploadFile = File(...), media_use : str = None):
-    # content_type, params = parse_options_header(file.content_type)
-    # formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     if not os.path.exists(PARENT_MEDIA_NAME):
         os.makedirs(PARENT_MEDIA_NAME)
-        print(f"Répertoire {media_use} créé avec succès!")
     
     # Vérifier si le répertoire enfant existe
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
@@ -38,6 +35,8 @@ async def create_media(file: UploadFile = File(...), media_use : str = None):
         image.thumbnail((500, 500))  # Redimensionne l'image en 500x500 pixels
         image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     elif media_use == "product_medias":
+        image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
+    elif media_use == "card_medias":
         image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
     elif media_use == "event_multi_medias":
         image.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
@@ -55,12 +54,25 @@ async def create_media(file: UploadFile = File(...), media_use : str = None):
 
 @router.get("/image/{image_name},{media_use}")
 async def get_media(image_name: str, media_use: str):
-    if media_use != "user_medias" or media_use != "product_medias" or media_use != "anounce_multi_medias" or media_use != "event_multi_medias" or media_use != "category_site_multi_medias" or media_use != "entertainment_site_multi_medias":
+    print("ok1")
+    if media_use != "user_medias" or media_use != "product_medias"or media_use != "card_medias"  or media_use != "anounce_multi_medias" or media_use != "event_multi_medias" or media_use != "category_site_multi_medias" or media_use != "entertainment_site_multi_medias":
+        print("ok2")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"we don't have media files this media file!")
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    print(child_path)
     image_path = os.path.join(child_path, image_name)
     return FileResponse(image_path)
-
+# @router.get("/image/{image_name},{media_use}")
+# async def get_media(image_name: str, media_use: str):
+#     print("ok1")
+#     if media_use == "user_medias" or media_use == "product_medias"or media_use == "card_medias"  or media_use == "anounce_multi_medias" or media_use == "event_multi_medias" or media_use == "category_site_multi_medias" or media_use == "entertainment_site_multi_medias":
+#         print("ok2")
+#         child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+#         print(child_path)
+#         image_path = os.path.join(child_path, image_name)
+#         return FileResponse(image_path)
+#     else:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"we don't have media files this media file!")
 
 
 
@@ -89,6 +101,8 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
             media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "product_medias":
             media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
+        elif media_use == "card_medias":
+            media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "event_multi_medias":
             media.save(f"{PARENT_MEDIA_NAME}/{media_use}/{file.filename}")
         elif media_use == "anounce_multi_medias":
@@ -104,9 +118,10 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
 
 
 # renvois une liste d'image
-@router.get("/images/{image_names:List[str]}/{media_use:str}")
+# @router.get("/images/{image_names:List[str]}/{media_use:str}")
+@router.get("/images/{image_names:List[str]},{media_use:str}")
 async def get_media_files(image_names: List[str], media_use: str):
-    if media_use != "user_medias" or media_use != "product_medias" or media_use != "anounce_multi_medias" or media_use != "event_multi_medias" or media_use != "category_site_multi_medias" or media_use != "entertainment_site_multi_medias":
+    if media_use != "user_medias" or media_use != "product_medias" or media_use != "card_medias" or media_use != "anounce_multi_medias" or media_use != "event_multi_medias" or media_use != "category_site_multi_medias" or media_use != "entertainment_site_multi_medias":
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"we don't have media files this media file!")
     
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
@@ -114,9 +129,12 @@ async def get_media_files(image_names: List[str], media_use: str):
     responses = []
     for image_name in image_names:
         image_path = os.path.join(child_path, image_name)
-        responses.append(FileResponse(image_path))
+        # responses.append(FileResponse(image_path))
+        responses.append(image_path)
       
     return responses
+
+
 
 # upmode la video
 @router.post("/upload_video/")
@@ -129,8 +147,7 @@ async def upload_video(files: list[UploadFile] = File(...), media_use : str = No
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
     if not os.path.exists(child_path):
         os.makedirs(child_path)
-    # Sauvegarde la photo de profil
-    # video = video.file 
+    
     responses = []
     if media_use == "live":
         for file in files:
@@ -145,7 +162,7 @@ async def upload_video(files: list[UploadFile] = File(...), media_use : str = No
 
 
 # renvois une liste de vidéo
-@router.get("/get_video/{video_files:List[str]}/{media_use:str}")
+@router.get("/get_video/{video_files:List[str]},{media_use:str}")
 async def get_media_files(video_files: List[str], media_use: str):
     if media_use != "live":
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"we don't have media files this media file!")
@@ -159,6 +176,15 @@ async def get_media_files(video_files: List[str], media_use: str):
         responses.append(FileResponse(video_path))
       
     return responses
+
+@router.get("/get-video/{video_name}")
+async def get_video(video_name: str):
+    child_path = os.path.join(PARENT_MEDIA_NAME, "live")
+    video_path = os.path.join(child_path, video_name)
+    if os.path.exists(video_path):
+        return {"message": "Video found", "filename": video_name}
+    else:
+        raise HTTPException(status_code=404, detail="Video not found") 
 
 # Suppression  des vidéos expiré
 # def update_attribute(db: Session = Depends(get_db)):

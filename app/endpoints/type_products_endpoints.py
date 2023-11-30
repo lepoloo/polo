@@ -24,6 +24,9 @@ router = APIRouter(prefix = "/type_product", tags=['Type products Requests'])
 # create a new type product sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=type_products_schemas.TypeProductListing)
 async def create_type_product(new_type_product_c: type_products_schemas.TypeProductCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+    type_product_query = db.query(models.TypeProduct).filter(models.TypeProduct.name == new_type_product_c.name).first()
+    if  type_product_query:
+        raise HTTPException(status_code=403, detail="This type product also exists !")
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
@@ -63,9 +66,16 @@ async def read_type_product_actif(skip: int = 0, limit: int = 100, db: Session =
 # Get an type_product
 @router.get("/get/{type_product_id}", status_code=status.HTTP_200_OK, response_model=type_products_schemas.TypeProductDetail)
 async def detail_type_product(type_product_id: str, db: Session = Depends(get_db)):
-    type_product_query = db.query(models.TypeProduct).filter(models.TypeProduct.id == type_product_id).first()
+    type_product_query = db.query(models.TypeProduct).filter(models.TypeProduct.id == type_product_id, models.TypeProduct.active == "True").first()
     if not type_product_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"type_product with id: {type_product_id} does not exist")
+    
+    products = type_product_query.products
+    for product in products:
+        details = [{ 'id': product.id, 'refnumber': product.refnumber, 'name': product.name, 'type_product_id': product.type_product_id, 'description': product.description, 'price': product.price, 'active': product.active} for product in products]
+        products = details
+    
+    
     return jsonable_encoder(type_product_query)
 
 

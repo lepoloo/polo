@@ -24,6 +24,9 @@ router = APIRouter(prefix = "/card", tags=['Cards Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=cards_schemas.CardListing)
 async def create_Card(new_card_c: cards_schemas.CardCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
+    card_query = db.query(models.Card).filter(models.Card.name == new_card_c.name, models.Card.family_card_id == new_card_c.family_card_id, models.Card.entertainment_site_id == new_card_c.entertainment_site_id).first()
+    if  card_query:
+        raise HTTPException(status_code=403, detail="This card also exists For this entity !")
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001
@@ -84,9 +87,16 @@ async def detail_Card_by_attribute(refnumber: Optional[str] = None, family_card_
 # Get an Card
 @router.get("/get/{card_id}", status_code=status.HTTP_200_OK, response_model=cards_schemas.CardDetail)
 async def detail_Card(card_id: str, db: Session = Depends(get_db)):
-    card_query = db.query(models.Card).filter(models.Card.id == card_id).first()
+    
+    card_query = db.query(models.Card).filter(models.Card.id == card_id, models.Card.active == "True").first()
+    
     if not card_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Card with id: {card_id} does not exist")
+    
+    menus = card_query.menus
+    details = [{ 'id': menu.id, 'refnumber': menu.refnumber, 'card_id': menu.card_id, 'product_id': menu.product_id, 'price': menu.price, 'active' : menu.active } for menu in menus]
+    menus = details
+        
     return jsonable_encoder(card_query)
 
 

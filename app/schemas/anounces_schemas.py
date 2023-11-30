@@ -1,7 +1,9 @@
 from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator, constr,Field
 from datetime import datetime, date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
+from app.schemas.anounce_multimedias_schemas import AnounceMultimediaListing
+from app.schemas.likes_schemas import LikeListing
 
 class Anounce(BaseModel):
     name: str
@@ -29,6 +31,8 @@ class AnounceDetail(AnounceListing):
     created_by: str
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
+    anounce_multimedias: List[AnounceMultimediaListing]
+    likes: List[LikeListing]
     
     class Config:
         from_attributes = True 

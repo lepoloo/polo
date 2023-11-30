@@ -1,7 +1,8 @@
 from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator, constr,Field
 from datetime import datetime, date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
+from app.schemas.entertainment_sites_schemas import EntertainmentSiteListing
 
 class Quarter(BaseModel):
     name: str
@@ -28,6 +29,7 @@ class QuarterDetail(QuarterListing):
     created_by: str
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
+    entertainment_sites : List[EntertainmentSiteListing]
     
     class Config:
         from_attributes = True 

@@ -58,18 +58,6 @@ async def read_anounce_multimedias_actif(skip: int = 0, limit: int = 100, db: Se
                         
     return jsonable_encoder(anounce_multimedias_queries)
 
-# # Get all anounce_multimedias research requests
-# @router.get("/research_actif/", response_model=List[anounce_multimedias_schemas.AnounceMultimediaListing])
-# async def read_anounce_multimedias_search_actif(search: Optional[str] = "", skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    
-#     anounce_multimedias_queries = db.query(models.AnounceMultimedia).filter(models.AnounceMultimedia.active == "True", models.AnounceMultimedia.link_media.contains(search) ).order_by(models.AnounceMultimedia.link_media).offset(skip).limit(limit).all()
-    
-#     # pas de anounce_multimedia
-#     if not anounce_multimedias_queries:
-       
-#         raise HTTPException(status_code=404, detail="anounce_multimedia not found")
-                        
-#     return jsonable_encoder(anounce_multimedias_queries)
 
 # Get an anounce_multimedia
 @router.get("/get/{anounce_multimedia_id}", status_code=status.HTTP_200_OK, response_model=anounce_multimedias_schemas.AnounceMultimediaDetail)

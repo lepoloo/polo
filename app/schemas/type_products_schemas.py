@@ -1,7 +1,8 @@
 from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator, constr,Field
 from datetime import datetime, date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
+from app.schemas.products_schemas import ProductListing
 
 class TypeProduct(BaseModel):
     name: str
@@ -27,6 +28,7 @@ class TypeProductDetail(TypeProductListing):
     created_by: str
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
+    products: List[ProductListing]
     
     class Config:
         from_attributes = True 

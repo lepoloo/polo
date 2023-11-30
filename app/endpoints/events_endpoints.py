@@ -77,21 +77,12 @@ async def detail_event(event_id: str, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
     
-    # entertainment_site = event_query.entertainment_site
-    # details = { 'id': entertainment_site.id, 'refnumber': entertainment_site.refnumber, 'name': entertainment_site.name, 'description': entertainment_site.description, 'address': entertainment_site.address, 'longitude': entertainment_site.longitude, 'latitude': entertainment_site.latitude, 'quarter_id': entertainment_site.quarter_id, 'owner_id': entertainment_site.owner_id, 'nb_visite': entertainment_site.nb_visite}
-    # entertainment_site = details
-    
-    # label_event = event_query.label_event
-    # details = { 'id': label_event.id, 'refnumber': label_event.refnumber, 'name': label_event.name, 'description': label_event.description}
-    # label_event = details
     
     event_multimedias = event_query.event_multimedias
-    for event_multimedia in event_multimedias:
-        details = [{ 'id': event_multimedia.id, 'refnumber': event_multimedia.refnumber, 'link_media': event_multimedia.link_media, 'event_id': event_multimedia.event_id, 'active': event_multimedia.active} for event_multimedia in event_multimedias]
+    details = [{ 'id': event_multimedia.id, 'refnumber': event_multimedia.refnumber, 'link_media': event_multimedia.link_media, 'event_id': event_multimedia.event_id, 'active': event_multimedia.active} for event_multimedia in event_multimedias]
     event_multimedias = details
     likes = event_query.likes
-    for like in likes:
-        details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
+    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
     likes = details
         
     return jsonable_encoder(event_query)
@@ -229,27 +220,27 @@ async def restore_event(event_id: str,  db: Session = Depends(get_db), current_u
     return jsonable_encoder(event_query)
 
 
-# Déactivation des tâches expiré
-def update_attribute(db: Session = Depends(get_db)):
+# Déactivation des tâches expirées
+# def update_attribute(db: Session = Depends(get_db)):
     
-    # Exemple de mise à jour d'une valeur dans la table
-    formated_date = datetime.now()
-    events_queries = db.query(models.Event).filter(models.Event.active == "True").all()
-    for events_querie in events_queries :
-        if events_querie.end_date < formated_date:
-            events_querie.active = "False"
-            db.commit()
-            db.refresh(events_querie)
+#     # Exemple de mise à jour d'une valeur dans la table
+#     formated_date = datetime.now()
+#     events_queries = db.query(models.Event).filter(models.Event.active == "True").all()
+#     for events_querie in events_queries :
+#         if events_querie.end_date < formated_date:
+#             events_querie.active = "False"
+#             db.commit()
+#             db.refresh(events_querie)
     
-    db.close()
+#     db.close()
 
-# Configuration de l'ordonnanceur
-scheduler = BackgroundScheduler()
-scheduler.add_job(update_attribute, 'interval', hours=1)
-scheduler.start()
+# # Configuration de l'ordonnanceur
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(update_attribute, 'interval', hours=1)
+# scheduler.start()
 
-# Tâche pour arrêter l'ordonnanceur lorsque l'application FastAPI se ferme
-def close_scheduler():
-    scheduler.shutdown()
+# # Tâche pour arrêter l'ordonnanceur lorsque l'application FastAPI se ferme
+# def close_scheduler():
+#     scheduler.shutdown()
 
-router.add_event_handler("shutdown", close_scheduler)
+# router.add_event_handler("shutdown", close_scheduler)

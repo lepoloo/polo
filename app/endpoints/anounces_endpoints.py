@@ -93,7 +93,14 @@ async def detail_anounce(anounce_id: str, db: Session = Depends(get_db)):
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=403, detail="Somthing is wrong in the process , pleace try later sorry!")
-    # anounce_query = db.query(models.Event).filter(models.Event.id == event_id).first()
+    
+    anounce_multimedias = anounce_query.anounce_multimedias
+    details = [{ 'id': anounce_multimedia.id, 'refnumber': anounce_multimedia.refnumber, 'link_media': anounce_multimedia.link_media, 'anounce_id': anounce_multimedia.anounce_id, 'active': anounce_multimedia.active} for anounce_multimedia in anounce_multimedias]
+    anounce_multimedias = details
+    
+    likes = anounce_query.likes
+    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
+    likes = details
     
     return jsonable_encoder(anounce_query)
 

@@ -667,7 +667,8 @@ class Favorite(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
-# Anounce : doing
+
+# Like : doing
 class Like(Base):
     __tablename__ = "likes"
 
@@ -690,3 +691,27 @@ class Like(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
+
+# Like : doing
+# class Reel(Base):
+#     __tablename__ = "reels"
+
+#     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+#     refnumber = Column(String, unique=True, nullable=False)
+#     owner_id = Column(String, ForeignKey(
+#         "users.id", ondelete="CASCADE"), nullable=False)
+#     owner = relationship("User", back_populates="likes")
+    
+#     event_id = Column(String, ForeignKey(
+#         "events.id", ondelete="CASCADE"), nullable=True)
+#     event = relationship("Event", back_populates="likes")
+    
+#     anounce_id = Column(String, ForeignKey(
+#         "anounces.id", ondelete="CASCADE"), nullable=True)
+#     anounce = relationship("Anounce", back_populates="likes")
+    
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+#     created_by = Column(String, nullable=False)
+#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+#     updated_by = Column(String, nullable=True)
+#     active = Column(Boolean, default=True)

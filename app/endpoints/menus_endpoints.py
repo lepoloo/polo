@@ -24,6 +24,10 @@ router = APIRouter(prefix = "/menu", tags=['Menus Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=menus_schemas.MenuListing)
 async def create_menu(new_menu_c: menus_schemas.MenuCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
+    menu_query = db.query(models.Menu).filter(models.Menu.card_id == new_menu_c.card_id, models.Menu.product_id == new_menu_c.product_id).first()
+    if  menu_query:
+        raise HTTPException(status_code=403, detail="This menu also exists For this card !")
+    
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001
@@ -61,7 +65,7 @@ async def read_menus_actif(skip: int = 0, limit: int = 100, db: Session = Depend
 # Get an menu
 @router.get("/get/{menu_id}", status_code=status.HTTP_200_OK, response_model=menus_schemas.MenuDetail)
 async def detail_menu(menu_id: str, db: Session = Depends(get_db)):
-    menu_query = db.query(models.Menu).filter(models.Menu.id == menu_id).first()
+    menu_query = db.query(models.Menu).filter(models.Menu.id == menu_id, models.Menu.active == "True").first()
     if not menu_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Menu with id: {menu_id} does not exist")
     return jsonable_encoder(menu_query)

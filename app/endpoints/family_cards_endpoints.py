@@ -24,6 +24,10 @@ router = APIRouter(prefix = "/family_card", tags=['Family_cards Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=family_cards_schemas.FamilyCardListing)
 async def create_family_card(new_family_card_c: family_cards_schemas.FamilyCardCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
+    family_card_query = db.query(models.FamilyCard).filter(models.FamilyCard.name == new_family_card_c.name).first()
+    if  family_card_query:
+        raise HTTPException(status_code=403, detail="This family card also exists !")
+    
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001
@@ -62,9 +66,15 @@ async def read_family_card_actif(skip: int = 0, limit: int = 100, db: Session = 
 # Get an family_card
 @router.get("/get/{family_card_id}", status_code=status.HTTP_200_OK, response_model=family_cards_schemas.FamilyCardDetail)
 async def detail_family_card(family_card_id: str, db: Session = Depends(get_db)):
-    family_card_query = db.query(models.FamilyCard).filter(models.FamilyCard.id == family_card_id).first()
+    family_card_query = db.query(models.FamilyCard).filter(models.FamilyCard.id == family_card_id, models.FamilyCard.active == "True").first()
     if not family_card_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"family_card with id: {family_card_id} does not exist")
+    
+    cards = family_card_query.cards
+    for card in cards:
+        details = [{ 'id': card.id, 'refnumber': card.refnumber, 'name': card.name, 'family_card_id': card.family_card_id, 'entertainment_site_id': card.entertainment_site_id, 'description': card.description, 'active': card.active} for card in cards]
+        cards = details
+        
     return jsonable_encoder(family_card_query)
 
 

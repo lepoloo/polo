@@ -1,7 +1,8 @@
 from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator, constr,Field
 from datetime import datetime, date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
+from app.schemas.cards_schemas import CardListing
 
 class FamilyCard(BaseModel):
     name: str
@@ -27,6 +28,7 @@ class FamilyCardDetail(FamilyCardListing):
     created_by: str
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
+    cards: List[CardListing]
     
     class Config:
         from_attributes = True 
