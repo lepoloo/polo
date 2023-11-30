@@ -39,6 +39,7 @@ class User(Base):
     notes = relationship("Note", back_populates="owner")
     favorites = relationship("Favorite", back_populates="owner")
     likes = relationship("Like", back_populates="owner")
+    reels = relationship("Reel", back_populates="owner")
     
     
 
@@ -686,32 +687,33 @@ class Like(Base):
         "anounces.id", ondelete="CASCADE"), nullable=True)
     anounce = relationship("Anounce", back_populates="likes")
     
+    reel_id = Column(String, ForeignKey(
+        "reels.id", ondelete="CASCADE"), nullable=True)
+    reel = relationship("Reel", back_populates="likes")
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
 
-# Like : doing
-# class Reel(Base):
-#     __tablename__ = "reels"
+# Reel : doing
+class Reel(Base):
+    __tablename__ = "reels"
 
-#     id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-#     refnumber = Column(String, unique=True, nullable=False)
-#     owner_id = Column(String, ForeignKey(
-#         "users.id", ondelete="CASCADE"), nullable=False)
-#     owner = relationship("User", back_populates="likes")
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    link_media = Column(String, nullable=False)
+    nb_vue = Column(Integer, server_default=text("0"))
+    description = Column(String(length=65535), nullable=True)
+    owner_id = Column(String, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    owner = relationship("User", back_populates="reels")
     
-#     event_id = Column(String, ForeignKey(
-#         "events.id", ondelete="CASCADE"), nullable=True)
-#     event = relationship("Event", back_populates="likes")
-    
-#     anounce_id = Column(String, ForeignKey(
-#         "anounces.id", ondelete="CASCADE"), nullable=True)
-#     anounce = relationship("Anounce", back_populates="likes")
-    
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
-#     created_by = Column(String, nullable=False)
-#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-#     updated_by = Column(String, nullable=True)
-#     active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    # Colonnes étrangères inversées
+    likes = relationship("Like", back_populates="event")

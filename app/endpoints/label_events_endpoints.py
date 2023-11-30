@@ -69,6 +69,11 @@ async def detail_label_event(label_event_id: str, db: Session = Depends(get_db))
     label_event_query = db.query(models.LabelEvent).filter(models.LabelEvent.id == label_event_id).first()
     if not label_event_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"label_event with id: {label_event_id} does not exist")
+    
+    events = label_event_query.events
+    details = [{ 'id': event.id, 'refnumber': event.refnumber, 'name': event.name, 'description': event.description, 'label_event_id': event.label_event_id, 'entertainment_site_id': event.entertainment_site_id, 'start_date': event.start_date, 'end_date': event.end_date, 'start_hour': event.start_hour, 'end_hour': event.end_hour, 'nb_visite': event.nb_visite, 'active': event.active} for event in events]
+    events = details
+    
     return jsonable_encoder(label_event_query)
 
 

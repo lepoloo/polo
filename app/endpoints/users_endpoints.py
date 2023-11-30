@@ -110,25 +110,29 @@ async def detail_user(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {user_id} does not exist")
     
     profils = user_query.profils
-    for profil in profils:
-        details = [{ 'id': profil.id, 'refnumber': profil.refnumber, 'fucntion': profil.fucntion, 'description': profil.description, 'owner_id': profil.owner_id, 'entertainment_site_id': profil.entertainment_site_id, 'active': profil.active} for profil in profils]
-        profils = details
+    details = [{ 'id': profil.id, 'refnumber': profil.refnumber, 'fucntion': profil.fucntion, 'description': profil.description, 'owner_id': profil.owner_id, 'entertainment_site_id': profil.entertainment_site_id, 'active': profil.active} for profil in profils]
+    profils = details
+    
     entertainment_sites = user_query.entertainment_sites
-    for entertainment_site in entertainment_sites:
-        details = [{ 'id': entertainment_site.id, 'refnumber': entertainment_site.refnumber, 'name': entertainment_site.name, 'address': entertainment_site.address, 'description': entertainment_site.description, 'longitude': entertainment_site.longitude, 'latitude': entertainment_site.latitude, 'quarter_id': entertainment_site.quarter_id, 'owner_id': entertainment_site.owner_id, 'nb_visite': entertainment_site.nb_visite, 'active': entertainment_site.active} for entertainment_site in entertainment_sites]
-        entertainment_sites = details
+    details = [{ 'id': entertainment_site.id, 'refnumber': entertainment_site.refnumber, 'name': entertainment_site.name, 'address': entertainment_site.address, 'description': entertainment_site.description, 'longitude': entertainment_site.longitude, 'latitude': entertainment_site.latitude, 'quarter_id': entertainment_site.quarter_id, 'owner_id': entertainment_site.owner_id, 'nb_visite': entertainment_site.nb_visite, 'active': entertainment_site.active} for entertainment_site in entertainment_sites]
+    entertainment_sites = details
+    
     favorites = user_query.favorites
-    for favorite in favorites:
-        details = [{ 'id': favorite.id, 'refnumber': favorite.refnumber, 'owner_id': favorite.owner_id, 'entertainment_site_id': favorite.entertainment_site_id, 'active': favorite.active} for favorite in favorites]
-        favorites = details
+    details = [{ 'id': favorite.id, 'refnumber': favorite.refnumber, 'owner_id': favorite.owner_id, 'entertainment_site_id': favorite.entertainment_site_id, 'active': favorite.active} for favorite in favorites]
+    favorites = details
+    
     likes = user_query.likes
-    for like in likes:
-        details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
-        likes = details
+    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
+    likes = details
+    
+    reels = user_query.reels
+    details = [{ 'id': reel.id, 'refnumber': reel.refnumber, 'link_media': reel.link_media, 'owner_id': reel.owner_id, 'description': reel.description, 'nb_visite': reel.nb_visite, 'active': reel.active} for reel in reels]
+    reels = details
+    
     notes = user_query.notes
-    for note in notes:
-        details = [{ 'id': note.id, 'refnumber': note.refnumber, 'owner_id': note.owner_id, 'entertainment_site_id': note.entertainment_site_id, 'note': note.note, 'active': note.active} for note in notes]
-        notes = details
+    details = [{ 'id': note.id, 'refnumber': note.refnumber, 'owner_id': note.owner_id, 'entertainment_site_id': note.entertainment_site_id, 'note': note.note, 'active': note.active} for note in notes]
+    notes = details
+    
     return jsonable_encoder(user_query)
 
 

@@ -106,8 +106,6 @@ async def detail_anounce(anounce_id: str, db: Session = Depends(get_db)):
 
 
 
-
-
 # update an anounce request
 @router.put("/update/{anounce_id}", status_code = status.HTTP_205_RESET_CONTENT, response_model = anounces_schemas.AnounceDetail)
 async def update_anounce(anounce_id: str, anounce_update: anounces_schemas.AnounceUpdate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):

@@ -7,6 +7,7 @@ class Like(BaseModel):
     owner_id: str
     event_id: Optional[constr(max_length=256)] = None
     anounce_id: Optional[constr(max_length=256)] = None
+    reel_id: Optional[constr(max_length=256)] = None
     
     
 
@@ -38,5 +39,6 @@ class LikeUpdate(BaseModel):
     owner_id: Optional[constr(max_length=256)] = None
     event_id: Optional[constr(max_length=256)] = None
     anounce_id: Optional[constr(max_length=256)] = None
+    reel_id: Optional[constr(max_length=256)] = None
     
 

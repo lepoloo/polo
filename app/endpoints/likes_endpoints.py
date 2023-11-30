@@ -12,7 +12,6 @@ from datetime import datetime, timedelta
 from app.database import engine, get_db
 from typing import Optional
 from  utils import oauth2
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -31,6 +30,8 @@ async def create_like(new_like_c: likes_schemas.LikeCreate, db: Session = Depend
         likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.event_id == new_like_c.event_id ).all()
     if new_like_c.anounce_id :
         likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.anounce_id == new_like_c.anounce_id ).all()
+    if new_like_c.reel_id :
+        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.reel_id == new_like_c.reel_id ).all()
     if not likes_queries:
         formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
         concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
@@ -54,6 +55,13 @@ async def create_like(new_like_c: likes_schemas.LikeCreate, db: Session = Depend
     else:
         
         likes_queries.active = toggle_boolean(likes_queries.active)
+        try:
+            db.add(likes_queries )# pour ajouter une tuple
+            db.commit() # pour faire l'enregistrement
+            db.refresh(likes_queries)# pour renvoyer le résultat
+        except SQLAlchemyError as e:
+            db.rollback()
+            raise HTTPException(status_code=403, detail="Somthing is wrong in the process, we can't validated your like!")
     
     return jsonable_encoder(likes_queries)
 
@@ -75,7 +83,7 @@ async def read_likes_actif(skip: int = 0, limit: int = 100, db: Session = Depend
 # Get an like
 # "/get_like_impersonal/?refnumber=value_refnumber&phone=valeur_phone&email=valeur_email&likename=valeur_likename" : Retourne `{"param1": "value1", "param2": 42, "param3": null}`.
 @router.get("/get_like_by_attribute/", status_code=status.HTTP_200_OK, response_model=List[likes_schemas.LikeListing])
-async def detail_like_by_attribute(refnumber: Optional[str] = None, event_id: Optional[str] = None, owner_id: Optional[str] = None, anounce_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def detail_like_by_attribute(refnumber: Optional[str] = None, event_id: Optional[str] = None, owner_id: Optional[str] = None, anounce_id: Optional[str] = None, reel_id: Optional[str] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     like_query = {} # objet vide
     if refnumber is not None :
         like_query = db.query(models.Like).filter(models.Like.refnumber == refnumber).order_by(models.Like.create_at).offset(skip).limit(limit).all()
@@ -85,10 +93,13 @@ async def detail_like_by_attribute(refnumber: Optional[str] = None, event_id: Op
         like_query = db.query(models.Like).filter(models.Like.event_id == event_id).order_by(models.Like.create_at).offset(skip).limit(limit).all()
     if anounce_id is not None :
         like_query = db.query(models.Like).filter(models.Like.anounce_id == anounce_id).order_by(models.Like.create_at).offset(skip).limit(limit).all()
+    if reel_id is not None :
+        like_query = db.query(models.Like).filter(models.Like.reel_id == reel_id).order_by(models.Like.create_at).offset(skip).limit(limit).all()
     
     
     if not like_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"like does not exist")
+    
     return jsonable_encoder(like_query)
 
 # Get an like

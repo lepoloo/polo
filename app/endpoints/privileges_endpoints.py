@@ -69,6 +69,15 @@ async def detail_privilege(privilege_id: str, db: Session = Depends(get_db)):
     privilege_query = db.query(models.Privilege).filter(models.Privilege.id == privilege_id).first()
     if not privilege_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"privilege with id: {privilege_id} does not exist")
+    
+    privilege_roles = privilege_query.privilege_roles
+    details = [{ 'id': privilege_role.id, 'refnumber': privilege_role.refnumber, 'privilege_id': privilege_role.privilege_id, 'privilege_id': privilege_role.privilege_id, 'active': privilege_role.active} for privilege_role in privilege_roles]
+    privilege_roles = details
+    
+    profil_privileges = privilege_query.profil_privileges
+    details = [{ 'id': profil_privilege.id, 'refnumber': profil_privilege.refnumber, 'profil_id': profil_privilege.profil_id, 'privilege_id': profil_privilege.privilege_id, 'active': profil_privilege.active} for profil_privilege in profil_privileges]
+    profil_privileges = details
+    
     return jsonable_encoder(privilege_query)
 
 

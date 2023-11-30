@@ -68,6 +68,15 @@ async def detail_role(role_id: str, db: Session = Depends(get_db)):
     role_query = db.query(models.Role).filter(models.Role.id == role_id, models.Role.active == "True").first()
     if not role_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {role_id} does not exist")
+    
+    profil_roles = role_query.profil_roles
+    details = [{ 'id': profil_role.id, 'refnumber': profil_role.refnumber, 'profil_id': profil_role.profil_id, 'role_id': profil_role.role_id, 'active': profil_role.active} for profil_role in profil_roles]
+    profil_roles = details
+    
+    privilege_roles = role_query.privilege_roles
+    details = [{ 'id': privilege_role.id, 'refnumber': privilege_role.refnumber, 'privilege_id': privilege_role.privilege_id, 'privilege_id': privilege_role.privilege_id, 'active': privilege_role.active} for privilege_role in privilege_roles]
+    privilege_roles = details
+    
     return jsonable_encoder(role_query)
 
 

@@ -67,6 +67,15 @@ async def detail_profil(profil_id: str, db: Session = Depends(get_db)):
     profil_query = db.query(models.Profil).filter(models.Profil.id == profil_id).first()
     if not profil_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"profil with id: {profil_id} does not exist")
+    
+    profil_roles = profil_query.profil_roles
+    details = [{ 'id': profil_role.id, 'refnumber': profil_role.refnumber, 'profil_id': profil_role.profil_id, 'role_id': profil_role.role_id, 'active': profil_role.active} for profil_role in profil_roles]
+    profil_roles = details
+    
+    profil_privileges = profil_query.profil_privileges
+    details = [{ 'id': profil_privilege.id, 'refnumber': profil_privilege.refnumber, 'profil_id': profil_privilege.profil_id, 'privilege_id': profil_privilege.privilege_id, 'active': profil_privilege.active} for profil_privilege in profil_privileges]
+    profil_privileges = details
+    
     return jsonable_encoder(profil_query)
 
 # Get an profil
