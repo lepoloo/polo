@@ -26,7 +26,7 @@ router = APIRouter(prefix = "/entertainment_site", tags=['Entertainment_sites Re
 # create a new entertainment_site sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=entertainment_sites_schemas.EntertainmentSiteListing)
 async def create_entertainment_site(new_entertainment_site_c: entertainment_sites_schemas.EntertainmentSiteCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
-    entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.name == new_entertainment_site_c.name, models.EntertainmentSite.latitude == new_entertainment_site_c.latitude, models.EntertainmentSite.longitude == new_entertainment_site_c.longitude, models.EntertainmentSite.quarter == new_entertainment_site_c.quarter).first()
+    entertainment_site_query = db.query(models.EntertainmentSite).filter(models.EntertainmentSite.name == new_entertainment_site_c.name, models.EntertainmentSite.latitude == new_entertainment_site_c.latitude, models.EntertainmentSite.longitude == new_entertainment_site_c.longitude, models.EntertainmentSite.quarter_id == new_entertainment_site_c.quarter_id).first()
     if  entertainment_site_query:
         raise HTTPException(status_code=403, detail="This entertaiment site also existe!")
     
@@ -51,7 +51,6 @@ async def create_entertainment_site(new_entertainment_site_c: entertainment_site
     # envois du mail au compte admin
         to_email = admin_mail
         subject = f"creation of a new entertainment site"
-        # content = f"réferance site : {concatenated_num_ref}, application_name : {PROJECT_NAME},message : Entertaiment site creation request, propritaire : {current_user.name} {current_user.surname} , Username : {current_user.username}, Phone : {current_user.phone}, Email : {current_user.email},operation : Creation Entertainment site. "
         content = f"réferance site : {concatenated_num_ref}, application_name : {config.project_name},message : Entertaiment site creation request, propritaire : {current_user.name} {current_user.surname} , Username : {current_user.username}, Phone : {current_user.phone}, Email : {current_user.email},operation : Creation Entertainment site. "
         send_email(to_email, subject, content)
     return jsonable_encoder(new_entertainment_site)

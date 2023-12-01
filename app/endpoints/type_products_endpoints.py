@@ -71,9 +71,8 @@ async def detail_type_product(type_product_id: str, db: Session = Depends(get_db
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"type_product with id: {type_product_id} does not exist")
     
     products = type_product_query.products
-    for product in products:
-        details = [{ 'id': product.id, 'refnumber': product.refnumber, 'name': product.name, 'type_product_id': product.type_product_id, 'description': product.description, 'price': product.price, 'active': product.active} for product in products]
-        products = details
+    details = [{ 'id': product.id, 'refnumber': product.refnumber, 'name': product.name, 'type_product_id': product.type_product_id, 'description': product.description, 'price': product.price, 'active': product.active} for product in products]
+    products = details
     
     
     return jsonable_encoder(type_product_query)

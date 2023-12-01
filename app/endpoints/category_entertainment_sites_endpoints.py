@@ -70,6 +70,8 @@ async def detail_category_entertainment_site(category_entertainment_site_id: str
     category_entertainment_site_query = db.query(models.CategoryEntertainmentSite).filter(models.CategoryEntertainmentSite.id == category_entertainment_site_id).first()
     if not category_entertainment_site_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"category_entertainment_site with id: {category_entertainment_site_id} does not exist")
+    
+    
     return jsonable_encoder(category_entertainment_site_query)
 
 # Get an category_entertainment_site

@@ -716,4 +716,4 @@ class Reel(Base):
     updated_by = Column(String, nullable=True)
     active = Column(Boolean, default=True)
     # Colonnes étrangères inversées
-    likes = relationship("Like", back_populates="event")
+    likes = relationship("Like", back_populates="reel")

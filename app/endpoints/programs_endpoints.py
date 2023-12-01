@@ -54,7 +54,7 @@ async def create_program(new_program_c: programs_schemas.ProgramCreate, db: Sess
 @router.get("/get_all_actif/", response_model=List[programs_schemas.ProgramListing])
 async def read_programs_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    programs_queries = db.query(models.Program).filter(models.Program.active == "True").offset(skip).limit(limit).all()
+    programs_queries = db.query(models.Program).filter(models.Program.active == "True").order_by(models.Program.name).offset(skip).limit(limit).all()
     
     # pas de program
     if not programs_queries:
@@ -91,28 +91,11 @@ async def detail_program(program_id: str, db: Session = Depends(get_db)):
     
     if not program_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"program with id: {program_id} does not exist")
+    
     schedule_times = program_query.schedule_times
-    for schedule_time in schedule_times:
-        details = [{ 'id': schedule_time.id, 'refnumber': schedule_time.refnumber, 'daily_day': schedule_time.daily_day, 'program_id': schedule_time.program_id, 'open_hour': schedule_time.open_hour, 'close_hour': schedule_time.close_hour, 'active': schedule_time.active} for schedule_time in schedule_times]
+    details = [{ 'id': schedule_time.id, 'refnumber': schedule_time.refnumber, 'daily_day': schedule_time.daily_day, 'program_id': schedule_time.program_id, 'open_hour': schedule_time.open_hour, 'close_hour': schedule_time.close_hour, 'active': schedule_time.active} for schedule_time in schedule_times]
     schedule_times = details
-        
-    # à vérifier
-    # schedule_times = program_query.schedule_times
-    # details = []
-
-    # for schedule_time in schedule_times:
-    #     print(schedule_time.active)
-    #     if schedule_time.active == "True":
-    #         detail = {
-    #             'id': schedule_time.id,
-    #             'refnumber': schedule_time.refnumber,
-    #             'daily_day': schedule_time.daily_day,
-    #             'program_id': schedule_time.program_id,
-    #             'open_hour': schedule_time.open_hour,
-    #             'close_hour': schedule_time.close_hour
-    #         }
-    #         details.append(detail)
-    # schedule_times = details
+    
     return jsonable_encoder(program_query)
 
 

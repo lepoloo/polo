@@ -1,7 +1,8 @@
 from pydantic import BaseModel, EmailStr, PositiveInt, validator, root_validator, constr,Field
 from datetime import datetime, date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
+from app.schemas.category_entertainment_sites_schemas import CategoryEntertainmentSiteListing
 
 class CategorySite(BaseModel):
     name: str
@@ -27,6 +28,7 @@ class CategorySiteDetail(CategorySiteListing):
     created_by: str
     updated_at: Optional[datetime] = None
     updated_by: Optional[constr(max_length=256)] = None
+    category_entertainment_sites: List[CategoryEntertainmentSiteListing]
     
     class Config:
         from_attributes = True 

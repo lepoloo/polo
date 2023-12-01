@@ -24,6 +24,10 @@ router = APIRouter(prefix = "/product", tags=['Products Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=products_schemas.ProductListing)
 async def create_product(new_product_c: products_schemas.ProductCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
+    product_query = db.query(models.Product).filter(models.Product.name == new_product_c.name, models.Product.type_product_id == new_product_c.type_product_id).first()
+    if  product_query:
+        raise HTTPException(status_code=403, detail="This association product, type product also exists !")
+    
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
     NUM_REF = 10001
@@ -49,7 +53,7 @@ async def create_product(new_product_c: products_schemas.ProductCreate, db: Sess
 @router.get("/get_all_actif/", response_model=List[products_schemas.ProductListing])
 async def read_products_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     
-    products_queries = db.query(models.Product).filter(models.Product.active == "True").offset(skip).limit(limit).all()
+    products_queries = db.query(models.Product).filter(models.Product.active == "True").order_by(models.Product.name).offset(skip).limit(limit).all()
     
     # pas de product
     if not products_queries:

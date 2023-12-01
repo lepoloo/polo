@@ -86,9 +86,9 @@ async def detail_country(country_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"country with id: {country_id} does not exist")
     
     towns = country_query.towns
-    for town in towns:
-        details = [{ 'id': town.id, 'refnumber': town.refnumber, 'name': town.name, 'country_id': town.country_id, 'active': town.active} for town in towns]
+    details = [{ 'id': town.id, 'refnumber': town.refnumber, 'name': town.name, 'country_id': town.country_id, 'active': town.active} for town in towns]
     towns = details
+    
     return jsonable_encoder(country_query)
 
 

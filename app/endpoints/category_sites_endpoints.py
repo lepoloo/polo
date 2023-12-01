@@ -68,6 +68,11 @@ async def detail_category_site(category_site_id: str, db: Session = Depends(get_
     category_site_query = db.query(models.CategorySite).filter(models.CategorySite.id == category_site_id).first()
     if not category_site_query:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"category_site with id: {category_site_id} does not exist")
+    
+    category_entertainment_sites = category_site_query.category_entertainment_sites
+    details = [{ 'id': category_entertainment_site.id, 'refnumber': category_entertainment_site.refnumber, 'entertainment_site_id': category_entertainment_site.entertainment_site_id, 'category_site_id': category_entertainment_site.category_site_id, 'active': category_entertainment_site.active} for category_entertainment_site in category_entertainment_sites]
+    category_entertainment_sites = details
+    
     return jsonable_encoder(category_site_query)
 
 
