@@ -7,8 +7,7 @@ from app.schemas import entertainment_sites_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
-from app import config
-# from configs.settings import admin_mail,PROJECT_NAME
+from app import config_sething
 import random, uuid
 from utils.users_utils import send_email
 from datetime import datetime, timedelta
@@ -51,7 +50,7 @@ async def create_entertainment_site(new_entertainment_site_c: entertainment_site
     # envois du mail au compte admin
         to_email = admin_mail
         subject = f"creation of a new entertainment site"
-        content = f"réferance site : {concatenated_num_ref}, application_name : {config.project_name},message : Entertaiment site creation request, propritaire : {current_user.name} {current_user.surname} , Username : {current_user.username}, Phone : {current_user.phone}, Email : {current_user.email},operation : Creation Entertainment site. "
+        content = f"réferance site : {concatenated_num_ref}, application_name : {config_sething.project_name},message : Entertaiment site creation request, propritaire : {current_user.name} {current_user.surname} , Username : {current_user.username}, Phone : {current_user.phone}, Email : {current_user.email},operation : Creation Entertainment site. "
         send_email(to_email, subject, content)
     return jsonable_encoder(new_entertainment_site)
 
@@ -134,7 +133,7 @@ async def detail_entertainment_site(entertainment_site_id: str, db: Session = De
     programs = details
     
     anounces = entertainment_site_query.anounces
-    details = [{ 'id': anounce.id, 'refnumber': anounce.refnumber, 'name': anounce.name, 'description': anounce.description, 'entertainment_site_id': anounce.entertainment_site_id, 'active': anounce.active} for anounce in anounces]
+    details = [{ 'id': anounce.id, 'refnumber': anounce.refnumber, 'name': anounce.name, 'description': anounce.description, 'entertainment_site_id': anounce.entertainment_site_id, 'duration': anounce.duration, 'end_date': anounce.end_date,'active': anounce.active} for anounce in anounces]
     anounces = details
     
     events = entertainment_site_query.events

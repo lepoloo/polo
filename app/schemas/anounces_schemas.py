@@ -9,6 +9,9 @@ class Anounce(BaseModel):
     name: str
     entertainment_site_id: str
     description: str = Field(..., max_length=65535)
+    duration: str
+    end_date: datetime
+
     
     
 
@@ -44,4 +47,6 @@ class AnounceUpdate(BaseModel):
     entertainment_site_id: Optional[constr(max_length=256)] = None
     description: Optional[constr(max_length=65535)] = None
     nb_visite: Optional[int] = Field(None, ge=0)
+    duration: Optional[constr(max_length=256)] = None
+    end_date: Optional[datetime] = None
     # active: bool = True

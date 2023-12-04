@@ -127,6 +127,10 @@ async def update_anounce(anounce_id: str, anounce_update: anounces_schemas.Anoun
             anounce_query.nb_visite = anounce_update.nb_visite
         if anounce_update.entertainment_site_id:
             anounce_query.entertainment_site_id = anounce_update.entertainment_site_id
+        if anounce_update.duration:
+            anounce_query.duration = anounce_update.duration
+        if anounce_update.end_date:
+            anounce_query.end_date = anounce_update.end_date
         
     
     try:

@@ -25,6 +25,7 @@ class UserCreate(User):
    password: str
    is_staff: bool = False
    is_owner: bool = False
+   is_annoncer: bool = False
    
 
 
@@ -41,6 +42,7 @@ class UserDetail(UserListing):
     image: str
     is_staff: bool
     is_owner: bool
+    is_annoncer: bool
     created_at: datetime
     created_by: str
     updated_at: Optional[datetime] = None
@@ -69,6 +71,7 @@ class UserUpdate(BaseModel):
     password: Optional[constr(max_length=256)] = None
     is_staff: Optional[bool] = False
     is_owner: Optional[bool] = False
+    is_annoncer: Optional[bool] = False
     # active: bool = True
 
 

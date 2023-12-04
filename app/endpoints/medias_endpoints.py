@@ -1,8 +1,7 @@
 import os
 from fastapi import APIRouter, HTTPException, Depends, status, Request, File, UploadFile,Form
 from app.models import models
-from app import config
-# from configs.settings import admin_mail,PARENT_MEDIA_NAME
+from app import config_sething
 from app.database import engine, get_db
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,7 +13,7 @@ from PIL import Image
 models.Base.metadata.create_all(bind=engine)
 
 # /users/
-PARENT_MEDIA_NAME = config.parent_media_name
+PARENT_MEDIA_NAME = config_sething.parent_media_name
 router = APIRouter(prefix = "/medias", tags=['Medias Requests'])
  
 @router.post("/uploadfile/")
@@ -200,7 +199,7 @@ async def get_video(video_name: str):
     
 #     db.close()
 
-# # Configuration de l'ordonnanceur
+# # config_sethinguration de l'ordonnanceur
 # scheduler = BackgroundScheduler()
 # scheduler.add_job(update_attribute, 'interval', hours=1)
 # scheduler.start()

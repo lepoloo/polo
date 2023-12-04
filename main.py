@@ -3,9 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 load_dotenv()
-# import configs.settings as settings
-from app import config
+from app import config_sething
 import logging
+# DATABASE_URL = os.getenv("DATABASE_URL")
 
 from app.endpoints.auths_endpoints import router as auths_endpoints_routers
 from app.endpoints.users_endpoints import router as users_routers
@@ -43,12 +43,12 @@ from app.endpoints.notes_endpoints import router as notes_routers
 
 logging.basicConfig(level=logging.INFO)  # Niveau de journalisation souhaité, par exemple INFO
 
-# FastAPI Configuration
+# FastAPI config_sethinguration
 
-if config.debug == "True":
-    app = FastAPI(title=config.project_name,version=config.project_version)
+if config_sething.debug == "True":
+    app = FastAPI(title=config_sething.project_name,version=config_sething.project_version)
 else:
-    app = FastAPI(title=config.project_name,version=config.project_version, docs_url = None)
+    app = FastAPI(title=config_sething.project_name,version=config_sething.project_version, docs_url = None)
 
 
 # Create a GET-based route for the root URL.
@@ -104,12 +104,15 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=config_sething.allow_methods,
+    allow_headers=config_sething.allow_headers,
 )
 logging.info("Message de journalisation")
 
 # Exécutez l'application avec uvicorn
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="172.19.120.188", port=8000)
+    # uvicorn.run(app, host="172.19.120.188", port=8000)
+    uvicorn.run("main:app", host=config_sething.server_host, port=config_sething.server_port, reload=True)
+    # uvicorn.run("main:app", host="172.19.120.188", port=8000, reload=True)
+    # la commande de lancement est : python main.py

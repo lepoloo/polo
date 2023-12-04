@@ -176,6 +176,8 @@ async def update_user(user_id: str, user_update: users_schemas.UserUpdate, db: S
             user_query.is_staff = user_update.is_staff
         if user_update.is_owner:
             user_query.is_owner = user_update.is_owner
+        if user_update.is_annoncer:
+            user_query.is_annoncer = user_update.is_annoncer
     
     try:
         db.commit() # pour faire l'enregistrement

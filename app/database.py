@@ -1,12 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.orm import sessionmaker
-from app import config
+from app import config_sething
 
-DATABASE_URL = f"{config.database_client}://{config.database_username}:{config.database_password}@{config.database_hostname}:{config.database_port}/{config.database_name}"
+# DATABASE_URL = f"'postgresql'://'postgres':'admin'@'localhost':5432/'polo_db'"
+# DATABASE_URL = "postgresql://postgres:admin@localhost:5432/polo_db"
+DATABASE_URL = f"{config_sething.database_client}://{config_sething.database_username}:{config_sething.database_password}@{config_sething.database_hostname}:{config_sething.database_port}/{config_sething.database_name}"
 engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+# Base: DeclarativeMeta = declarative_base()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Database Dependencies
 async def get_db():

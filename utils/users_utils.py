@@ -7,16 +7,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from dotenv import load_dotenv
-# from configs.settings import smtp_host, smtp_port, smtp_username, smtp_password # autre
-from app import config
+from app import config_sething
 load_dotenv('.env')
 
-# fetch les données
-# @app.get("/fetch")
-# async def fetch_data():
-#     async with httpx.AsyncClient() as client:
-#         response = await client.get("https://api.example.com/endpoint")
-#         return response.json()
 
 from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -31,10 +24,10 @@ def verify(plain_password, hashed_password):
 
 # send mail
 class Envs:
-    smtp_host_sys = config.smtp_host
-    smtp_port_sys = config.smtp_port
-    smtp_username_sys = config.smtp_username
-    smtp_password_sys = config.smtp_password
+    smtp_host_sys = config_sething.smtp_host
+    smtp_port_sys = config_sething.smtp_port
+    smtp_username_sys = config_sething.smtp_username
+    smtp_password_sys = config_sething.smtp_password
 
 def send_email(to_email: str, subject: str, content: str):
     # Paramètres d'authentification du serveur SMTP
