@@ -101,6 +101,7 @@ class PrivilegeRole(Base):
     active = Column(Boolean, default=True)
     
 # Profil : doing   
+
 class Profil(Base):
     __tablename__ = "profils"
 
@@ -108,16 +109,12 @@ class Profil(Base):
     refnumber = Column(String, unique=True, nullable=False)
     fucntion = Column(String, index=True, nullable=False)
     description = Column(String(length=65535), nullable=True)
-    
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
     owner = relationship("User", back_populates="profils")
-    
-    
     entertainment_site_id = Column(String, ForeignKey(
         "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
     entertainment_site = relationship("EntertainmentSite", back_populates="profils")
-    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -127,6 +124,8 @@ class Profil(Base):
     # Colonnes étrangères inversées countryId
     profil_roles = relationship("ProfilRole", back_populates="profil")
     profil_privileges = relationship("ProfilPrivilege", back_populates="profil")
+    
+
     
 # ProfilRole : to do   
 class ProfilRole(Base):
@@ -170,6 +169,142 @@ class ProfilPrivilege(Base):
     active = Column(Boolean, default=True)
     
 
+################## Entertement Site ################################
+
+# Country : doing 
+class Country(Base):
+    __tablename__ = "contries"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=True, index=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    
+    # Colonnes étrangères inversées
+    towns = relationship("Town", back_populates="country")
+
+# Town : doing  
+class Town(Base):
+    __tablename__ = "towns"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=False, index=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    
+    country_id = Column(String, ForeignKey(
+        "contries.id", ondelete="CASCADE"), nullable=False)
+    country = relationship("Country", back_populates="towns")
+    
+    # Colonnes étrangères inversées
+    quaters = relationship("Quarter", back_populates="town")
+
+# Quarter : doing  
+class Quarter(Base):
+    __tablename__ = "quarters"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=False, index=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    
+    town_id = Column(String, ForeignKey(
+        "towns.id", ondelete="CASCADE"), nullable=False)
+    town = relationship("Town", back_populates="quaters")
+    
+    # Colonnes étrangères inversées countryId
+    entertainment_sites = relationship("EntertainmentSite", back_populates="quarter")
+
+# CategorySite : doing
+class CategorySite(Base):
+    __tablename__ = "category_sites"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=True, index=True, nullable=False)
+    description = Column(String(length=65535), nullable=False)
+    image = Column(String, index=True, unique=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    
+    # Colonnes étrangères inversées
+    category_entertainment_sites = relationship("CategoryEntertainmentSite", back_populates="category_site")
+    
+# Menu : doing    
+class CategoryEntertainmentSite(Base):
+    __tablename__ = "category_entertainment_sites"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    # relationship
+    category_site_id = Column(String, ForeignKey(
+        "category_sites.id", ondelete="CASCADE"), nullable=False)
+    category_site = relationship("CategorySite", back_populates="category_entertainment_sites")
+    
+    entertainment_site_id = Column(String, ForeignKey(
+        "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
+    entertainment_site = relationship("EntertainmentSite", back_populates="category_entertainment_sites")
+    
+
+# EntertainmentSite : doing 
+class EntertainmentSite(Base):
+    __tablename__ = "entertainment_sites"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=False, index=True, nullable=False)
+    description = Column(String(length=65535), nullable=True)
+    nb_visite = Column(Integer, server_default=text("0"))
+    address = Column(String, unique=True, nullable=False)
+    longitude = Column(String, unique=False, nullable=False)
+    latitude = Column(String, unique=False, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    owner_id = Column(String, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    owner = relationship("User", back_populates="entertainment_sites")
+    
+    quarter_id = Column(String, ForeignKey(
+        "quarters.id", ondelete="CASCADE"), nullable=False)
+    quarter = relationship("Quarter", back_populates="entertainment_sites")
+    
+    # Colonnes étrangères inversées countryId
+    cards = relationship("Card", back_populates="entertainment_site")
+    reservations = relationship("Reservation", back_populates="entertainment_site")
+    comments = relationship("Comment", back_populates="entertainment_site")
+    programs = relationship("Program", back_populates="entertainment_site")
+    anounces = relationship("Anounce", back_populates="entertainment_site")
+    events = relationship("Event", back_populates="entertainment_site")
+    profils = relationship("Profil", back_populates="entertainment_site")
+    entertainment_site_multimedias = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
+    notes = relationship("Note", back_populates="entertainment_site")
+    favorites = relationship("Favorite", back_populates="entertainment_site")
+    category_entertainment_sites = relationship("CategoryEntertainmentSite", back_populates="entertainment_site")
+
+      
     ######################## Card #############################
     
    
@@ -275,104 +410,8 @@ class Menu(Base):
     card_id = Column(String, ForeignKey(
         "cards.id", ondelete="CASCADE"), nullable=False)
     card = relationship("Card", back_populates="menus")
-    
-    
-    
-################## Entertement Site ################################
+      
 
-# Country : doing 
-class Country(Base):
-    __tablename__ = "contries"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=True, index=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    
-    # Colonnes étrangères inversées
-    towns = relationship("Town", back_populates="country")
-
-# Town : doing  
-class Town(Base):
-    __tablename__ = "towns"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=False, index=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    
-    country_id = Column(String, ForeignKey(
-        "contries.id", ondelete="CASCADE"), nullable=False)
-    country = relationship("Country", back_populates="towns")
-    
-    # Colonnes étrangères inversées
-    quaters = relationship("Quarter", back_populates="town")
-
-# Quarter : doing  
-class Quarter(Base):
-    __tablename__ = "quarters"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=False, index=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    
-    town_id = Column(String, ForeignKey(
-        "towns.id", ondelete="CASCADE"), nullable=False)
-    town = relationship("Town", back_populates="quaters")
-    
-    # Colonnes étrangères inversées countryId
-    entertainment_sites = relationship("EntertainmentSite", back_populates="quarter")
-
-# CategorySite : doing
-class CategorySite(Base):
-    __tablename__ = "category_sites"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=True, index=True, nullable=False)
-    description = Column(String(length=65535), nullable=False)
-    image = Column(String, index=True, unique=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    
-    # Colonnes étrangères inversées
-    category_entertainment_sites = relationship("CategoryEntertainmentSite", back_populates="category_site")
-    
-# Menu : doing    
-class CategoryEntertainmentSite(Base):
-    __tablename__ = "category_entertainment_sites"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    # relationship
-    category_site_id = Column(String, ForeignKey(
-        "category_sites.id", ondelete="CASCADE"), nullable=False)
-    category_site = relationship("CategorySite", back_populates="category_entertainment_sites")
-    
-    entertainment_site_id = Column(String, ForeignKey(
-        "entertainment_sites.id", ondelete="CASCADE"), nullable=False)
-    entertainment_site = relationship("EntertainmentSite", back_populates="category_entertainment_sites")
  
 # Reservation : doing
 class Reservation(Base):
@@ -466,45 +505,6 @@ class ScheduleTime(Base):
  
  
  
-# EntertainmentSite : doing 
-class EntertainmentSite(Base):
-    __tablename__ = "entertainment_sites"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=False, index=True, nullable=False)
-    description = Column(String(length=65535), nullable=True)
-    nb_visite = Column(Integer, server_default=text("0"))
-    address = Column(String, unique=True, nullable=False)
-    longitude = Column(String, unique=False, nullable=False)
-    latitude = Column(String, unique=False, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    owner_id = Column(String, ForeignKey(
-        "users.id", ondelete="CASCADE"), nullable=False)
-    owner = relationship("User", back_populates="entertainment_sites")
-    
-    quarter_id = Column(String, ForeignKey(
-        "quarters.id", ondelete="CASCADE"), nullable=False)
-    quarter = relationship("Quarter", back_populates="entertainment_sites")
-    
-    # Colonnes étrangères inversées countryId
-    cards = relationship("Card", back_populates="entertainment_site")
-    reservations = relationship("Reservation", back_populates="entertainment_site")
-    comments = relationship("Comment", back_populates="entertainment_site")
-    programs = relationship("Program", back_populates="entertainment_site")
-    anounces = relationship("Anounce", back_populates="entertainment_site")
-    events = relationship("Event", back_populates="entertainment_site")
-    profils = relationship("Profil", back_populates="entertainment_site")
-    entertainment_site_multimedias = relationship("EntertainmentSiteMultimedia", back_populates="entertainment_site")
-    notes = relationship("Note", back_populates="entertainment_site")
-    favorites = relationship("Favorite", back_populates="entertainment_site")
-    category_entertainment_sites = relationship("CategoryEntertainmentSite", back_populates="entertainment_site")
-
-    
     ###################### Anounce #########################  
 
 # Anounce : doing
@@ -531,7 +531,41 @@ class Anounce(Base):
     anounce_multimedias = relationship("AnounceMultimedia", back_populates="anounce")
     likes = relationship("Like", back_populates="anounce")
     
-     
+# AnounceMultimedia : to doing    
+class AnounceMultimedia(Base):
+    __tablename__ = "anounce_multimedias"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    link_media = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    # relationship
+    anounce_id = Column(String, ForeignKey(
+        "anounces.id", ondelete="CASCADE"), nullable=False)
+    anounce = relationship("Anounce", back_populates="anounce_multimedias")
+
+
+# LabelEvent : doing   
+class LabelEvent(Base):
+    __tablename__ = "label_events"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=True, index=True, nullable=False)
+    description = Column(String(length=65535), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    
+    # Colonnes étrangères inversées
+    events = relationship("Event", back_populates="label_event")
+       
 # Event : doing
 class Event(Base):
     __tablename__ = "events"
@@ -559,43 +593,7 @@ class Event(Base):
     
     # Colonnes étrangères inversées
     event_multimedias = relationship("EventMultimedia", back_populates="event")
-    likes = relationship("Like", back_populates="event")
-    
-    
-# LabelEvent : doing   
-class LabelEvent(Base):
-    __tablename__ = "label_events"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    name = Column(String, unique=True, index=True, nullable=False)
-    description = Column(String(length=65535), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    
-    # Colonnes étrangères inversées
-    events = relationship("Event", back_populates="label_event")
-    
-
-# AnounceMultimedia : to doing    
-class AnounceMultimedia(Base):
-    __tablename__ = "anounce_multimedias"
-
-    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
-    refnumber = Column(String, unique=True, nullable=False)
-    link_media = Column(String, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    created_by = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    updated_by = Column(String, nullable=True)
-    active = Column(Boolean, default=True)
-    # relationship
-    anounce_id = Column(String, ForeignKey(
-        "anounces.id", ondelete="CASCADE"), nullable=False)
-    anounce = relationship("Anounce", back_populates="anounce_multimedias")
+    likes = relationship("Like", back_populates="event")  
 
 # EvenMultimedia : to doing    
 class EventMultimedia(Base):
