@@ -27,7 +27,7 @@ class User(Base):
     password = Column(String(length=256), index=True)
     is_staff = Column(Boolean, default=False)
     is_owner = Column(Boolean, default=False)
-    # is_annoncer = Column(Boolean, default=False)
+    is_annoncer = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
