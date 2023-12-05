@@ -1,6 +1,7 @@
 fastapi [all]
 sqlalchemy # ORM
 psycopg2 # client de base de données
+psycopg2-binary
 # databases[mysql]# pour my sql
 uvicorn # serveur d'application
 alembic # gestion de migration
@@ -11,7 +12,7 @@ PyJWT
 bcrypt
 passlib
 python-jose
-ppillow
+pillow
 python-multipart # gestion des médiat
 python-dotenv # gestion des variable d'environnement
 apscheduler # automatisation des tâches
