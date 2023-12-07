@@ -97,8 +97,12 @@ async def detail_storie(storie_id: str, db: Session = Depends(get_db)):
     
     
     likes = storie_query.likes
-    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'storie_id': like.storie_id, 'active': like.active} for like in likes]
+    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'reel_id': like.reel_id, 'story_id': like.story_id, 'active': like.active} for like in likes]
     likes = details
+    
+    signals = storie_query.signals
+    details = [{ 'id': signal.id, 'refnumber': signal.refnumber, 'owner_id': signal.owner_id, 'event_id': signal.event_id, 'anounce_id': signal.anounce_id, 'story_id': signal.story_id, 'story_id': signal.story_id, 'entertainment_site_id': signal.entertainment_site_id, 'active': signal.active} for signal in signals]
+    signals = details
     
     return jsonable_encoder(storie_query)
 

@@ -1,6 +1,10 @@
 __pycache__
 venv/
+alemvic/
 .env
 vercel.json
 media/
+# Ignorer tous les fichiers .versel
 .versel
+# Ignorer tous les fichiers .log
+*.log

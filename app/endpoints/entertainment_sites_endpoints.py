@@ -159,6 +159,10 @@ async def detail_entertainment_site(entertainment_site_id: str, db: Session = De
     notes = entertainment_site_query.notes
     details = [{ 'id': note.id, 'refnumber': note.refnumber, 'note': note.note, 'owner_id': note.owner_id, 'entertainment_site_id': note.entertainment_site_id, 'active': note.active} for note in notes]
     notes = details
+    
+    signals = entertainment_site_query.signals
+    details = [{ 'id': signal.id, 'refnumber': signal.refnumber, 'owner_id': signal.owner_id, 'event_id': signal.event_id, 'anounce_id': signal.anounce_id, 'story_id': signal.story_id, 'story_id': signal.story_id, 'entertainment_site_id': signal.entertainment_site_id, 'active': signal.active} for signal in signals]
+    signals = details
         
     return jsonable_encoder(entertainment_site_query)
 

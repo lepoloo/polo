@@ -99,8 +99,12 @@ async def detail_anounce(anounce_id: str, db: Session = Depends(get_db)):
     anounce_multimedias = details
     
     likes = anounce_query.likes
-    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
+    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'reel_id': like.reel_id, 'story_id': like.story_id, 'active': like.active} for like in likes]
     likes = details
+    
+    signals = anounce_query.signals
+    details = [{ 'id': signal.id, 'refnumber': signal.refnumber, 'owner_id': signal.owner_id, 'event_id': signal.event_id, 'anounce_id': signal.anounce_id, 'story_id': signal.story_id, 'story_id': signal.story_id, 'entertainment_site_id': signal.entertainment_site_id, 'active': signal.active} for signal in signals]
+    signals = details
     
     return jsonable_encoder(anounce_query)
 

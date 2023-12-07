@@ -41,6 +41,7 @@ class User(Base):
     favorites = relationship("Favorite", back_populates="owner")
     likes = relationship("Like", back_populates="owner")
     reels = relationship("Reel", back_populates="owner")
+    stories = relationship("Story", back_populates="owner")
     signals = relationship("Signal", back_populates="owner")
  
 # Country : doing    
@@ -636,7 +637,7 @@ class Story(Base):
     description = Column(String(length=65535), nullable=True)
     owner_id = Column(String, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
-    owner = relationship("User", back_populates="reels")
+    owner = relationship("User", back_populates="stories")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)

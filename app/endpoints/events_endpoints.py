@@ -81,9 +81,14 @@ async def detail_event(event_id: str, db: Session = Depends(get_db)):
     event_multimedias = event_query.event_multimedias
     details = [{ 'id': event_multimedia.id, 'refnumber': event_multimedia.refnumber, 'link_media': event_multimedia.link_media, 'event_id': event_multimedia.event_id, 'active': event_multimedia.active} for event_multimedia in event_multimedias]
     event_multimedias = details
+    
     likes = event_query.likes
-    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'active': like.active} for like in likes]
+    details = [{ 'id': like.id, 'refnumber': like.refnumber, 'owner_id': like.owner_id, 'event_id': like.event_id, 'anounce_id': like.anounce_id, 'reel_id': like.reel_id, 'story_id': like.story_id, 'active': like.active} for like in likes]
     likes = details
+    
+    signals = event_query.signals
+    details = [{ 'id': signal.id, 'refnumber': signal.refnumber, 'owner_id': signal.owner_id, 'event_id': signal.event_id, 'anounce_id': signal.anounce_id, 'story_id': signal.story_id, 'story_id': signal.story_id, 'entertainment_site_id': signal.entertainment_site_id, 'active': signal.active} for signal in signals]
+    signals = details
         
     return jsonable_encoder(event_query)
 

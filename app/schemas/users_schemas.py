@@ -4,7 +4,9 @@ from enum import Enum
 from typing import Optional, List
 from app.schemas.profils_schemas import ProfilListing
 from app.schemas.likes_schemas import LikeListing
+from app.schemas.signals_schemas import SignalListing
 from app.schemas.reels_schemas import ReelListing
+from app.schemas.stories_schemas import StoryListing
 from app.schemas.notes_schemas import NoteListing
 from app.schemas.favorites_schemas import FavoriteListing
 from app.schemas.entertainment_sites_schemas import EntertainmentSiteListing
@@ -53,6 +55,8 @@ class UserDetail(UserListing):
     favorites: List[FavoriteListing]
     reels: List[ReelListing]
     likes: List[LikeListing]
+    stories: List[StoryListing]
+    signals: List[SignalListing]
     
     class Config:
         from_attributes = True 
