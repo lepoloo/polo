@@ -3,20 +3,21 @@ from datetime import datetime, date
 from enum import Enum
 from typing import Optional
 
-class Like(BaseModel):
+class Signal(BaseModel):
     owner_id: str
     event_id: Optional[constr(max_length=256)] = None
     anounce_id: Optional[constr(max_length=256)] = None
     reel_id: Optional[constr(max_length=256)] = None
     story_id: Optional[constr(max_length=256)] = None
+    entertainment_site_id: Optional[constr(max_length=256)] = None
     
     
 
-class LikeCreate(Like):
+class SignalCreate(Signal):
    pass
 
 
-class LikeListing(Like):
+class SignalListing(Signal):
     id: str
     refnumber: str
     active: bool
@@ -24,7 +25,7 @@ class LikeListing(Like):
     class Config:
         from_attributes = True 
 
-class LikeDetail(LikeListing):
+class SignalDetail(SignalListing):
     
     created_at: datetime
     created_by: str
@@ -36,11 +37,12 @@ class LikeDetail(LikeListing):
         # orm_mode = True 
         
 
-class LikeUpdate(BaseModel):
+class SignalUpdate(BaseModel):
     owner_id: Optional[constr(max_length=256)] = None
     event_id: Optional[constr(max_length=256)] = None
     anounce_id: Optional[constr(max_length=256)] = None
     reel_id: Optional[constr(max_length=256)] = None
     story_id: Optional[constr(max_length=256)] = None
+    entertainment_site_id: Optional[constr(max_length=256)] = None
     
 

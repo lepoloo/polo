@@ -81,7 +81,7 @@ async def detail_reel_by_attribute(refnumber: Optional[str] = None, owner_id: Op
     return jsonable_encoder(reel_query)
 
 # Get an reel
-@router.get("/get/{reel_id}", status_code=status.HTTP_200_OK, response_model=reels_schemas.ReelUpdate)
+@router.get("/get/{reel_id}", status_code=status.HTTP_200_OK, response_model=reels_schemas.ReelDetail)
 async def detail_reel(reel_id: str, db: Session = Depends(get_db)):
     reel_query = db.query(models.Reel).filter(models.Reel.id == reel_id).first()
     if not reel_query:
@@ -107,8 +107,8 @@ async def detail_reel(reel_id: str, db: Session = Depends(get_db)):
 
 
 # update an reel request
-@router.put("/update/{reel_id}", status_code = status.HTTP_205_RESET_CONTENT, response_model = reels_schemas.ReelUpdate)
-async def update_reel(reel_id: str, reel_update: reels_schemas.reelUpdate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+@router.put("/update/{reel_id}", status_code = status.HTTP_205_RESET_CONTENT, response_model = reels_schemas.ReelDetail)
+async def update_reel(reel_id: str, reel_update: reels_schemas.ReelUpdate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
         
     reel_query = db.query(models.Reel).filter(models.Reel.id == reel_id, models.Reel.active == "True").first()
 

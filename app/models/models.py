@@ -41,6 +41,7 @@ class User(Base):
     favorites = relationship("Favorite", back_populates="owner")
     likes = relationship("Like", back_populates="owner")
     reels = relationship("Reel", back_populates="owner")
+    signals = relationship("Signal", back_populates="owner")
  
 # Country : doing    
 class Country(Base):
@@ -57,6 +58,8 @@ class Country(Base):
     
     # Colonnes étrangères inversées
     towns = relationship("Town", back_populates="country")
+
+    
 
 # Town : doing  
 class Town(Base):
@@ -154,6 +157,7 @@ class EntertainmentSite(Base):
     notes = relationship("Note", back_populates="entertainment_site")
     favorites = relationship("Favorite", back_populates="entertainment_site")
     category_entertainment_sites = relationship("CategoryEntertainmentSite", back_populates="entertainment_site")
+    signals = relationship("Signal", back_populates="entertainment_site")
     
 # EntertainmentSiteMultimedia : to doing    
 class EntertainmentSiteMultimedia(Base):
@@ -537,7 +541,8 @@ class Event(Base):
     
     # Colonnes étrangères inversées
     event_multimedias = relationship("EventMultimedia", back_populates="event")
-    likes = relationship("Like", back_populates="event") 
+    likes = relationship("Like", back_populates="event")
+    signals = relationship("Signal", back_populates="event")
     
 # EvenMultimedia : to doing    
 class EventMultimedia(Base):
@@ -579,6 +584,7 @@ class Anounce(Base):
     # Colonnes étrangères inversées
     anounce_multimedias = relationship("AnounceMultimedia", back_populates="anounce")
     likes = relationship("Like", back_populates="anounce")
+    signals = relationship("Signal", back_populates="anounce")
     
 # AnounceMultimedia : to doing    
 class AnounceMultimedia(Base):
@@ -617,6 +623,29 @@ class Reel(Base):
     active = Column(Boolean, default=True)
     # Colonnes étrangères inversées
     likes = relationship("Like", back_populates="reel")
+    signals = relationship("Signal", back_populates="reel")
+     
+# Story : doing
+class Story(Base):
+    __tablename__ = "stories"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    link_media = Column(String, nullable=False)
+    nb_vue = Column(Integer, server_default=text("0"))
+    description = Column(String(length=65535), nullable=True)
+    owner_id = Column(String, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    owner = relationship("User", back_populates="reels")
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    # Colonnes étrangères inversées
+    likes = relationship("Like", back_populates="story")
+    signals = relationship("Signal", back_populates="story")
     
 # Like : doing
 class Like(Base):
@@ -639,6 +668,46 @@ class Like(Base):
     reel_id = Column(String, ForeignKey(
         "reels.id", ondelete="CASCADE"), nullable=True)
     reel = relationship("Reel", back_populates="likes")
+    
+    story_id = Column(String, ForeignKey(
+        "stories.id", ondelete="CASCADE"), nullable=True)
+    story = relationship("Story", back_populates="likes")
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_by = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+    
+# Signal : doing
+class Signal(Base):
+    __tablename__ = "signals"
+
+    id = Column(String, primary_key=True, index=True, unique=True, nullable=False)
+    refnumber = Column(String, unique=True, nullable=False)
+    owner_id = Column(String, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    owner = relationship("User", back_populates="signals")
+    
+    event_id = Column(String, ForeignKey(
+        "events.id", ondelete="CASCADE"), nullable=True)
+    event = relationship("Event", back_populates="signals")
+    
+    anounce_id = Column(String, ForeignKey(
+        "anounces.id", ondelete="CASCADE"), nullable=True)
+    anounce = relationship("Anounce", back_populates="signals")
+    
+    reel_id = Column(String, ForeignKey(
+        "reels.id", ondelete="CASCADE"), nullable=True)
+    reel = relationship("Reel", back_populates="signals")
+    
+    story_id = Column(String, ForeignKey(
+        "stories.id", ondelete="CASCADE"), nullable=True)
+    story = relationship("Story", back_populates="signals")
+    
+    entertainment_site_id = Column(String, ForeignKey(
+        "entertainment_sites.id", ondelete="CASCADE"), nullable=True)
+    entertainment_site = relationship("EntertainmentSite", back_populates="signals")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String, nullable=False)
