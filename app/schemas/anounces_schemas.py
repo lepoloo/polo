@@ -9,7 +9,7 @@ class Anounce(BaseModel):
     name: str
     entertainment_site_id: str
     description: str = Field(..., max_length=65535)
-    duration: str
+    duration: int
     end_date: datetime
 
     

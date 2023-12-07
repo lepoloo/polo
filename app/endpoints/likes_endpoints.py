@@ -27,13 +27,17 @@ router = APIRouter(prefix = "/like", tags=['Likes Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=likes_schemas.LikeListing)
 async def create_like(new_like_c: likes_schemas.LikeCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     if new_like_c.event_id :
-        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.event_id == new_like_c.event_id ).all()
+        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.event_id == new_like_c.event_id ).first()
     if new_like_c.anounce_id :
-        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.anounce_id == new_like_c.anounce_id ).all()
+        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.anounce_id == new_like_c.anounce_id ).first()
     if new_like_c.reel_id :
-        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.reel_id == new_like_c.reel_id ).all()
+        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.reel_id == new_like_c.reel_id ).first()
     if new_like_c.story_id :
-        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.story_id == new_like_c.story_id ).all()
+        likes_queries = db.query(models.Like).filter(models.Like.owner_id == new_like_c.owner_id,models.Like.story_id == new_like_c.story_id ).first()
+    
+    print("ok1")
+    print(likes_queries.__dict__)
+    print("ok2")
     
     if not likes_queries:
         formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
@@ -53,10 +57,11 @@ async def create_like(new_like_c: likes_schemas.LikeCreate, db: Session = Depend
             db.refresh(likes_queries)# pour renvoyer le résultat
         except SQLAlchemyError as e:
             db.rollback()
-            raise HTTPException(status_code=403, detail="Somthing is wrong in the process, pleace try later sorry!")
-        
+            raise HTTPException(status_code=403, detail="Somthing is wrong in the process, pleace try later sorry!")    
     else:
-        
+        print("ok3")
+        print(likes_queries.active)
+        print("ok4")
         likes_queries.active = toggle_boolean(likes_queries.active)
         try:
             db.add(likes_queries )# pour ajouter une tuple

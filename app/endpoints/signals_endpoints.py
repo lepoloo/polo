@@ -27,15 +27,15 @@ router = APIRouter(prefix = "/signal", tags=['Signals Requests'])
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=signals_schemas.SignalListing)
 async def create_signal(new_signal_c: signals_schemas.SignalCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     if new_signal_c.event_id :
-        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.event_id == new_signal_c.event_id ).all()
+        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.event_id == new_signal_c.event_id ).first()
     if new_signal_c.anounce_id :
-        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.anounce_id == new_signal_c.anounce_id ).all()
+        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.anounce_id == new_signal_c.anounce_id ).first()
     if new_signal_c.reel_id :
-        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.reel_id == new_signal_c.reel_id ).all()
+        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.reel_id == new_signal_c.reel_id ).first()
     if new_signal_c.story_id :
-        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.story_id == new_signal_c.story_id ).all()
+        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.story_id == new_signal_c.story_id ).first()
     if new_signal_c.entertainment_site_id :
-        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.entertainment_site_id == new_signal_c.entertainment_site_id ).all()
+        signals_queries = db.query(models.Signal).filter(models.Signal.owner_id == new_signal_c.owner_id,models.Signal.entertainment_site_id == new_signal_c.entertainment_site_id ).first()
     
     if not signals_queries:
         formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)

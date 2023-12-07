@@ -1,6 +1,6 @@
 __pycache__
 venv/
-alemvic/
+# alemvic/
 .env
 vercel.json
 media/

@@ -126,16 +126,16 @@ async def detail_user(user_id: str, db: Session = Depends(get_db)):
     likes = details
     
     reels = user_query.reels
-    details = [{ 'id': reel.id, 'refnumber': reel.refnumber, 'link_media': reel.link_media, 'owner_id': reel.owner_id, 'description': reel.description, 'nb_visite': reel.nb_visite, 'active': reel.active} for reel in reels]
+    details = [{ 'id': reel.id, 'refnumber': reel.refnumber, 'link_media': reel.link_media, 'owner_id': reel.owner_id, 'description': reel.description, 'nb_vue': reel.nb_vue, 'active': reel.active} for reel in reels]
     reels = details
     
     signals = user_query.signals
     details = [{ 'id': signal.id, 'refnumber': signal.refnumber, 'owner_id': signal.owner_id, 'event_id': signal.event_id, 'anounce_id': signal.anounce_id, 'story_id': signal.story_id, 'story_id': signal.story_id, 'entertainment_site_id': signal.entertainment_site_id, 'active': signal.active} for signal in signals]
     signals = details
     
-    reels = user_query.reels
-    details = [{ 'id': reel.id, 'refnumber': reel.refnumber, 'link_media': reel.link_media, 'owner_id': reel.owner_id, 'description': reel.description, 'nb_visite': reel.nb_visite, 'active': reel.active} for reel in reels]
-    reels = details
+    stories = user_query.stories
+    details = [{ 'id': storie.id, 'refnumber': storie.refnumber, 'link_media': storie.link_media, 'owner_id': storie.owner_id, 'description': storie.description, 'nb_vue': storie.nb_vue, 'active': storie.active} for storie in stories]
+    stories = details
     
     notes = user_query.notes
     details = [{ 'id': note.id, 'refnumber': note.refnumber, 'owner_id': note.owner_id, 'entertainment_site_id': note.entertainment_site_id, 'note': note.note, 'active': note.active} for note in notes]
