@@ -22,7 +22,7 @@ router = APIRouter(prefix = "/reel", tags=['Reels Requests'])
  
 # create a new reel sheet
 @router.post("/create/", status_code = status.HTTP_201_CREATED, response_model=reels_schemas.ReelListing)
-async def create_reel(new_reel_c: reels_schemas.reelCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
+async def create_reel(new_reel_c: reels_schemas.ReelCreate, db: Session = Depends(get_db), current_user : str = Depends(oauth2.get_current_user)):
     
     formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")# Formatage de la date au format souhaité (par exemple, YYYY-MM-DD HH:MM:SS)
     concatenated_uuid = str(uuid.uuid4())+ ":" + formated_date
@@ -34,7 +34,7 @@ async def create_reel(new_reel_c: reels_schemas.reelCreate, db: Session = Depend
     author = current_user.id
     owner_id = current_user.id
     
-    new_reel= models.Reel(id = concatenated_uuid, **new_reel_c.dict(), refnumber = concatenated_num_ref, created_by = owner_id, created_by = author)
+    new_reel= models.Reel(id = concatenated_uuid, **new_reel_c.dict(), refnumber = concatenated_num_ref, owner_id = owner_id, created_by = author)
     
     try:
         db.add(new_reel )# pour ajouter une tuple

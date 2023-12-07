@@ -40,6 +40,9 @@ from app.endpoints.category_entertainment_sites_endpoints import router as categ
 from app.endpoints.favorites_endpoints import router as favorites_routers
 from app.endpoints.entertainment_site_multimedias_endpoints import router as entertainment_site_multimedias_routers
 from app.endpoints.notes_endpoints import router as notes_routers
+from app.endpoints.reels_endpoints import router as reels_routers
+from app.endpoints.stories_endpoints import router as stories_routers
+from app.endpoints.signals_endpoints import router as signals_routers
 
 logging.basicConfig(level=logging.INFO)  # Niveau de journalisation souhaité, par exemple INFO
 
@@ -91,6 +94,9 @@ app.include_router(label_events_routers)
 app.include_router(events_routers)
 app.include_router(event_multimedias_routers)
 app.include_router(reservations_routers)
+app.include_router(reels_routers)
+app.include_router(stories_routers)
+app.include_router(signals_routers)
 
 app.include_router(notes_routers)
 app.include_router(favorites_routers)

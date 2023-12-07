@@ -112,7 +112,7 @@ async def detail_signal_by_attribute(refnumber: Optional[str] = None, event_id: 
     return jsonable_encoder(signal_query)
 
 # Get an signal
-@router.get("/get/{signal_id}", status_code=status.HTTP_200_OK, response_model=signals_schemas.signalDetail)
+@router.get("/get/{signal_id}", status_code=status.HTTP_200_OK, response_model=signals_schemas.SignalDetail)
 async def detail_signal(signal_id: str, db: Session = Depends(get_db)):
     signal_query = db.query(models.Signal).filter(models.Signal.id == signal_id).first()
     if not signal_query:

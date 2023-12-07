@@ -275,7 +275,9 @@ async def get_media_files(video_file: str, media_use: str):
     # Vérifiez si la vidéo existe
     # if video_path.is_file():
     if video_path:
-        return FileResponse(video_path, media_type="video/mp4")
+        # return FileResponse(video_path, media_type="video/mp4")
+        # Renvoyer le fichier vidéo au frontend
+        return FileResponse(child_path + video_file)
       
     return {"error": "Vidéo non trouvée"}
 

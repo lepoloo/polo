@@ -11,6 +11,7 @@ from app.schemas.events_schemas import EventListing
 from app.schemas.entertainment_site_multimedias_schemas import EntertainmentSiteMultimediaListing
 from app.schemas.profils_schemas import ProfilListing
 from app.schemas.notes_schemas import NoteListing
+from app.schemas.signals_schemas import SignalListing
 from app.schemas.favorites_schemas import FavoriteListing
 from app.schemas.category_entertainment_sites_schemas import CategoryEntertainmentSiteListing
 
@@ -55,6 +56,7 @@ class EntertainmentSiteDetail(EntertainmentSiteListing):
     profils: List[ProfilListing]
     entertainment_site_multimedias: List[EntertainmentSiteMultimediaListing]
     notes: List[NoteListing]
+    signals: List[NoteListing]
     favorites: List[FavoriteListing]
     category_entertainment_sites: List[CategoryEntertainmentSiteListing]
     

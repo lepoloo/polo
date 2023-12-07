@@ -34,7 +34,7 @@ async def create_storie(new_storie_c: stories_schemas.StoryCreate, db: Session =
     author = current_user.id
     owner_id = current_user.id
     
-    new_storie= models.Story(id = concatenated_uuid, **new_storie_c.dict(), refnumber = concatenated_num_ref, created_by = owner_id, created_by = author)
+    new_storie= models.Story(id = concatenated_uuid, **new_storie_c.dict(), refnumber = concatenated_num_ref, owner_id = owner_id, created_by = author)
     
     try:
         db.add(new_storie )# pour ajouter une tuple
