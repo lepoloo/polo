@@ -764,4 +764,3 @@ class ScheduleTime(Base):
         "programs.id", ondelete="CASCADE"), nullable=False)
     program = relationship("Program", back_populates="schedule_times")
  
-

@@ -1,11 +1,7 @@
 # charger le fichier de l'environnement
 from dotenv import load_dotenv
 import os
-
-# Charger les variables d'environnement à partir du fichier .env
 load_dotenv()
-
-# fin chargement des variables d'environnement
 
 from logging.config import fileConfig
 
@@ -20,9 +16,7 @@ from app import config_sething
 # access to the values within the .ini file in use.
 config = context.config
 config.set_main_option(
-    # "sqlalchemy.url",  str(config_sething.database_url_a))
     "sqlalchemy.url", f'{config_sething.database_client_alembic}://{config_sething.database_username}:{config_sething.database_password}@{config_sething.database_hostname}:{config_sething.database_port}/{config_sething.database_name}')
-    # "sqlalchemy.url", 'postgresql+psycopg2://postgres:admin@localhost:5432/polo_db')
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -34,7 +28,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-# target_metadata = None
+target_metadata = None
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
