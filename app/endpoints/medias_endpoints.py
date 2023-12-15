@@ -15,8 +15,8 @@ models.Base.metadata.create_all(bind=engine)
 # /users/
 PARENT_MEDIA_NAME = config_sething.parent_media_name
 MEDIA_PATHS = {
-    "user_medias": "user_medias",
-    "product_medias": "product_medias",
+    "user_medias": "user_medias",# pour la photo de profile du user
+    "product_medias": "product_medias",# photo des produit
     "card_medias": "card_medias",
     "event_multi_medias": "event_multi_medias",
     "anounce_multi_medias": "anounce_multi_medias",
@@ -29,6 +29,17 @@ router = APIRouter(prefix = "/medias", tags=['Medias Requests'])
 # create image 
 @router.post("/uploadfile/")
 async def create_media(file: UploadFile = File(...), media_use: str = None):
+    if media_use not in MEDIA_PATHS:
+        raise HTTPException(status_code=404, detail=f"We don't have this media files!")
+    
+    if not os.path.exists(PARENT_MEDIA_NAME):
+        os.makedirs(PARENT_MEDIA_NAME)
+
+    # Vérifier si le répertoire enfant existe
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    if not os.path.exists(child_path):
+        os.makedirs(child_path)
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
     
     try:
         image = Image.open(file.file)
@@ -62,6 +73,17 @@ async def get_media(image_name: str, media_use: str):
 @router.post("/uploadfiles/")
 async def create_upload_files(files: List[UploadFile] = File(...), media_use : str = None):
     
+    if media_use not in MEDIA_PATHS:
+        raise HTTPException(status_code=404, detail=f"We don't have this media files!")
+    
+    if not os.path.exists(PARENT_MEDIA_NAME):
+        os.makedirs(PARENT_MEDIA_NAME)
+
+    # Vérifier si le répertoire enfant existe
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    if not os.path.exists(child_path):
+        os.makedirs(child_path)
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
     # formated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     media_name = []
     for file in files:
@@ -104,7 +126,14 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
 async def get_media_files(image_names: List[str], media_use: str):
     if media_use not in MEDIA_PATHS:
         raise HTTPException(status_code=404, detail=f"We don't have this media files!")
+    
+    if not os.path.exists(PARENT_MEDIA_NAME):
+        os.makedirs(PARENT_MEDIA_NAME)
 
+    # Vérifier si le répertoire enfant existe
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    if not os.path.exists(child_path):
+        os.makedirs(child_path)
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
 
     responses = []
@@ -169,7 +198,15 @@ async def get_media_files(video_file: str, media_use: str):
 
     if media_use not in MEDIA_PATHS:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"We don't have media files for this media type!")
+    
+    if not os.path.exists(PARENT_MEDIA_NAME):
+        os.makedirs(PARENT_MEDIA_NAME)
 
+    # Vérifier si le répertoire enfant existe
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    if not os.path.exists(child_path):
+        os.makedirs(child_path)
+        
     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
     video_path = os.path.join(child_path, video_file)
 
