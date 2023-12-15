@@ -116,13 +116,9 @@ async def get_media_files(image_names: List[str], media_use: str):
   
     
 #     return responses
-@router.post("/upload_videos/")
-async def upload_videos(files: list[UploadFile] = File(...), media_use: str = None):
-    valid_media_types = [
-        "reel_medias", "product_medias", "card_medias", "event_multi_medias",
-        "anounce_multi_medias", "category_site_multi_medias", "entertainment_site_multi_medias"
-    ]
-
+@router.post("/upload_video/")
+async def upload_video(file: UploadFile = File(...), media_use: str = None):
+    
     if media_use not in MEDIA_PATHS:
         raise HTTPException(status_code=403, detail="This file cannot be saved, sorry!")
 
@@ -136,21 +132,40 @@ async def upload_videos(files: list[UploadFile] = File(...), media_use: str = No
 
     responses = []
 
-    for file in files:
-        file_path = os.path.join(child_path, file.filename)
-        with open(file_path, "wb") as video_file:
-            video_file.write(file.file.read())
-        responses.append(FileResponse(file.filename))
+    file_path = os.path.join(child_path, file.filename)
+    with open(file_path, "wb") as video_file:
+        video_file.write(file.file.read())
 
-    return responses
+    return file.filename
+
+# #     return responses
+# @router.post("/upload_videos/")
+# async def upload_videos(files: list[UploadFile] = File(...), media_use: str = None):
+#     
+#     if media_use not in MEDIA_PATHS:
+#         raise HTTPException(status_code=403, detail="This file cannot be saved, sorry!")
+
+#     if not os.path.exists(PARENT_MEDIA_NAME):
+#         os.makedirs(PARENT_MEDIA_NAME)
+
+#     # Vérifier si le répertoire enfant existe
+#     child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+#     if not os.path.exists(child_path):
+#         os.makedirs(child_path)
+
+#     responses = []
+
+#     for file in files:
+#         file_path = os.path.join(child_path, file.filename)
+#         with open(file_path, "wb") as video_file:
+#             video_file.write(file.file.read())
+#         responses.append(FileResponse(file.filename))
+
+#     return responses
 
 
 @router.get("/get_video/{video_file:str},{media_use:str}")
 async def get_media_files(video_file: str, media_use: str):
-    valid_media_types = [
-        "reel_medias", "product_medias", "card_medias", "event_multi_medias",
-        "anounce_multi_medias", "category_site_multi_medias", "entertainment_site_multi_medias"
-    ]
 
     if media_use not in MEDIA_PATHS:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"We don't have media files for this media type!")
