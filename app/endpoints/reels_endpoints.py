@@ -7,6 +7,7 @@ from app.schemas import reels_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
+from app.endpoints.medias_endpoints import delete_media
 import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
@@ -49,6 +50,19 @@ async def create_reel(new_reel_c: reels_schemas.ReelCreate, db: Session = Depend
 # Get all reels requests
 @router.get("/get_all_actif/", response_model=List[reels_schemas.ReelListing])
 async def read_reels_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    
+    reels_queries = db.query(models.Reel).filter(models.Reel.active == "True", models.Reel.created_at < (datetime.now() - timedelta(hours=24))).all()
+    # Mettre à jour les enregistrements et changer l'attribut actif à False
+    for reels_querie in reels_queries:
+        reels_querie.active = False
+        try:
+            db.commit() # pour faire l'enregistrement
+            # db.refresh()# pour renvoyer le résultat
+        except SQLAlchemyError as e:
+            db.rollback()
+            raise HTTPException(status_code=403, detail="Somthing is wrong in the process, pleace try later sorry!")
+        
+        await delete_media(reels_querie.link_media, "reel_medias")
     
     reels_queries = db.query(models.Reel).filter(models.Reel.active == "True").order_by(models.Reel.created_at).offset(skip).limit(limit).all()
     

@@ -18,10 +18,10 @@ MEDIA_PATHS = {
     "user_medias": "user_medias",# pour la photo de profile du user
     "product_medias": "product_medias",# photo des produit
     "card_medias": "card_medias",
-    "event_multi_medias": "event_multi_medias",
-    "anounce_multi_medias": "anounce_multi_medias",
+    "event_medias": "event_medias",
+    "anounce_medias": "anounce_medias",
     "product_medias": "product_medias",
-    "entertainment_site_multi_medias": "entertainment_site_multi_medias",
+    "entertainment_site_medias": "entertainment_site_medias",
     "reel_medias": "reel_medias",
     
 }
@@ -166,6 +166,34 @@ async def upload_video(file: UploadFile = File(...), media_use: str = None):
         video_file.write(file.file.read())
 
     return file.filename
+
+# delet media
+async def delete_media(media_delet: str, media_use: str):
+    """
+    Endpoint pour supprimer un fichier média.
+
+    Parameters:
+    - `media_delet`: Le nom du fichier média dans le système de fichiers.
+
+    Returns:
+    - Message indiquant si la suppression a réussi ou non.
+    """
+    if media_use not in MEDIA_PATHS:
+        raise HTTPException(status_code=404, detail=f"We don't have this media files!")
+    
+    try:
+        # Construction du chemin complet du fichier média
+        full_path = os.path.join(PARENT_MEDIA_NAME, media_use, media_delet)
+
+        # Vérifier si le fichier existe
+        if os.path.exists(full_path):
+            # Supprimer le fichier
+            os.remove(full_path)
+            return {"message": f"Le fichier {media_delet} a été supprimé avec succès."}
+        else:
+            raise HTTPException(status_code=404, detail=f"Le fichier {media_delet} n'a pas été trouvé.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Une erreur s'est produite lors de la suppression du fichier : {str(e)}")
 
 # #     return responses
 # @router.post("/upload_videos/")

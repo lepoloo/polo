@@ -7,6 +7,7 @@ from app.schemas import stories_schemas
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import models
+from app.endpoints.medias_endpoints import delete_media
 import uuid
 from datetime import datetime, timedelta
 from app.database import engine, get_db
@@ -49,6 +50,17 @@ async def create_storie(new_storie_c: stories_schemas.StoryCreate, db: Session =
 # Get all stories requests
 @router.get("/get_all_actif/", response_model=List[stories_schemas.StoryListing])
 async def read_stories_actif(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    
+    stories_queries = db.query(models.Story).filter(models.Story.active == "True", models.Story.created_at < (datetime.now() - timedelta(hours=24))).all()
+    # Mettre à jour les enregistrements et changer l'attribut actif à False
+    for stories_querie in stories_queries:
+        stories_querie.active = False
+        try:
+            db.commit() # pour faire l'enregistrement
+        except SQLAlchemyError as e:
+            db.rollback()
+            raise HTTPException(status_code=403, detail="Somthing is wrong in the process, pleace try later sorry!")
+        await delete_media(stories_querie.link_media, "reel_medias")
     
     stories_queries = db.query(models.Story).filter(models.Story.active == "True").order_by(models.Story.created_at).offset(skip).limit(limit).all()
     
