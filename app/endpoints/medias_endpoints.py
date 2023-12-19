@@ -47,7 +47,7 @@ async def create_media(file: UploadFile = File(...), media_use: str = None):
         raise HTTPException(status_code=400, detail=f"Failed to open image: {str(e)}")
 
     # Modifier le nom du fichier en ajoutant la date actuelle comme préfixe
-    file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + file.filename
+    file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f") + "_" + file.filename
 
     try:
         if media_use in MEDIA_PATHS:
@@ -93,7 +93,7 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to open image: {str(e)}")
 
-        file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + file.filename
+        file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f") + "_" + file.filename
 
         try:
             if media_use in MEDIA_PATHS:
@@ -160,8 +160,7 @@ async def upload_video(file: UploadFile = File(...), media_use: str = None):
     if not os.path.exists(child_path):
         os.makedirs(child_path)
 
-
-    file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + file.filename
+    file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f") + "_" + file.filename
     
     file_path = os.path.join(child_path, file.filename)
     with open(file_path, "wb") as video_file:
