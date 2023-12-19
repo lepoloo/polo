@@ -58,3 +58,9 @@ async def logout(request: Request, current_user : str = Depends(oauth2.get_curre
     #     return user_logout
 
     return {"message": "User successfully logged out"}
+# Endpoint de déconnexion
+@router.post("/logout")
+async def logout( token : str = Depends(oauth2.get_current_user)):
+    oauth2.invalid_tokens.add(token)
+    return {"message": "Logout successful"}
+

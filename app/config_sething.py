@@ -19,6 +19,7 @@ database_name: str = os.getenv("DATABASE_NAME")
 secret_key: str = os.getenv("SECRET_KEY")
 algorithm: str = os.getenv("ALGORITHM")
 access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+refresh_token_expire_days: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
 # configuration mail
 smtp_host: str = os.getenv("SMTP_HOST")
 smtp_port:int = int(os.getenv("SMTP_PORT"))

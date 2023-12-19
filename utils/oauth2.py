@@ -22,6 +22,7 @@ from passlib.context import CryptContext
 SECRET_KEY = config_sething.secret_key
 ALGORITHM = config_sething.algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = config_sething.access_token_expire_minutes
+REFRESH_TOKEN_EXPIRE_DAYS = config_sething.refresh_token_expire_days
 
 
 def create_access_token(data: dict):
@@ -41,7 +42,7 @@ def verify_access_token(token: str, credentials_exception):
 
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id: str = payload.get("user_id")
-        if id is None:
+        if id is None or token in invalid_tokens:
             raise credentials_exception
         token_data = TokenData(id=id)
     except JWTError:
@@ -69,3 +70,5 @@ def hash(password: str):
 
 def verify(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
+
+invalid_tokens = set()
