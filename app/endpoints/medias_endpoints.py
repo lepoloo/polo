@@ -46,7 +46,8 @@ async def create_media(file: UploadFile = File(...), media_use: str = None):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to open image: {str(e)}")
 
-    # file.filename = datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ":" + file.filename
+    # Modifier le nom du fichier en ajoutant la date actuelle comme préfixe
+    file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + file.filename
 
     try:
         if media_use in MEDIA_PATHS:
@@ -92,7 +93,7 @@ async def create_upload_files(files: List[UploadFile] = File(...), media_use : s
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to open image: {str(e)}")
 
-        # file.filename = datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ":" + file.filename
+        file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + file.filename
 
         try:
             if media_use in MEDIA_PATHS:
@@ -159,13 +160,37 @@ async def upload_video(file: UploadFile = File(...), media_use: str = None):
     if not os.path.exists(child_path):
         os.makedirs(child_path)
 
-    responses = []
 
+    file.filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + file.filename
+    
     file_path = os.path.join(child_path, file.filename)
     with open(file_path, "wb") as video_file:
         video_file.write(file.file.read())
 
     return file.filename
+
+@router.get("/get_video/{video_file:str},{media_use:str}")
+async def get_media_files(video_file: str, media_use: str):
+
+    if media_use not in MEDIA_PATHS:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"We don't have media files for this media type!")
+    
+    if not os.path.exists(PARENT_MEDIA_NAME):
+        os.makedirs(PARENT_MEDIA_NAME)
+
+    # Vérifier si le répertoire enfant existe
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    if not os.path.exists(child_path):
+        os.makedirs(child_path)
+        
+    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
+    video_path = os.path.join(child_path, video_file)
+
+    if os.path.exists(video_path):
+        return FileResponse(video_path)
+      
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Video not found")
+
 
 # delet media
 async def delete_media(media_delet: str, media_use: str):
@@ -221,27 +246,7 @@ async def delete_media(media_delet: str, media_use: str):
 #     return responses
 
 
-@router.get("/get_video/{video_file:str},{media_use:str}")
-async def get_media_files(video_file: str, media_use: str):
 
-    if media_use not in MEDIA_PATHS:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"We don't have media files for this media type!")
-    
-    if not os.path.exists(PARENT_MEDIA_NAME):
-        os.makedirs(PARENT_MEDIA_NAME)
-
-    # Vérifier si le répertoire enfant existe
-    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
-    if not os.path.exists(child_path):
-        os.makedirs(child_path)
-        
-    child_path = os.path.join(PARENT_MEDIA_NAME, media_use)
-    video_path = os.path.join(child_path, video_file)
-
-    if os.path.exists(video_path):
-        return FileResponse(video_path)
-      
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Video not found")
 
 
 
